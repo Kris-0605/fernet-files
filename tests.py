@@ -45,7 +45,6 @@ def execute_test(desc: str, test: Callable) -> None:
         pbar = tqdm(desc=desc, total=441) # magic, must be changing if number of test sizes changes
     for chunksize in testing_sizes():
         for inputsize in testing_sizes():
-            print(chunksize, inputsize)
             input_data = os.urandom(inputsize)
             test(chunksize, input_data)
             if TQDM_AVAILABLE: pbar.update(1)
