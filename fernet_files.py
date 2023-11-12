@@ -16,6 +16,10 @@ class FernetFile:
         if isinstance(file, StringIO) or isinstance(file, TextIOBase):
             raise TypeError("File must be a binary file")
         self.file = file
+        if not isinstance(chunksize, int):
+            raise TypeError("Chunksize must be a positive integer")
+        if chunksize <= 0:
+            raise ValueError("Chunksize must be a positive integer")
 
     def seek(self, *args, whence=os.SEEK_SET):
         if type(self.file) == BytesIO:

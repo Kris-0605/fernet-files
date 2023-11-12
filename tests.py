@@ -51,7 +51,9 @@ def execute_test(desc: str, test: Callable) -> None:
 
 class TestFernetFiles(unittest.TestCase):
     def test_invalid_chunksizes(self):
-        for chunksize in (0, -1, 1.5, "1", b"1"):
+        for chunksize in (1.5, "1", b"1"):
+            self.assertRaises(TypeError, fernet_files.FernetFile, fernet_files.FernetFile.generate_key(), BytesIO(), chunksize=chunksize)
+        for chunksize in (0, -1, -2):
             self.assertRaises(ValueError, fernet_files.FernetFile, fernet_files.FernetFile.generate_key(), BytesIO(), chunksize=chunksize)
 
     def test_key(self):
