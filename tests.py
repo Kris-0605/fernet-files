@@ -232,6 +232,8 @@ def test_seeking(unit_test: TestFernetFiles, fernet_file: fernet_files.FernetFil
             size = get_size()
             if x+size < 0:
                 data = input_data[x:x+size]
+            elif x == 0:
+                data = b''
             else:
                 data = input_data[x:]
             unit_test.assertEqual(fernet_file.seek(x, os.SEEK_END), len(input_data)+x)
