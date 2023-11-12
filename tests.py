@@ -68,7 +68,7 @@ class TestFernetFiles(unittest.TestCase):
     def test_invalid_file(self):
         for chunksize in testing_sizes():
             with open("test", "wt") as invalid_file:
-                self.assertRaises(ValueError, fernet_files.FernetFile, fernet_files.FernetFile.generate_key(), invalid_file, chunksize=chunksize)
+                self.assertRaises(TypeError, fernet_files.FernetFile, fernet_files.FernetFile.generate_key(), invalid_file, chunksize=chunksize)
 
     def test_file_nowith_readwrite(self):
         def test(chunksize, input_data):

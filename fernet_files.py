@@ -2,7 +2,7 @@ from cryptography.fernet import Fernet
 from base64 import urlsafe_b64decode, urlsafe_b64encode
 import os
 from typing import Union, Optional, Type
-from io import BytesIO, RawIOBase, BufferedIOBase
+from io import BytesIO, RawIOBase, BufferedIOBase, StringIO, TextIOBase
 from types import TracebackType
 
 _magic_dict = {}
@@ -13,6 +13,8 @@ def _add_magic(size: int) -> int:
     
 class FernetFile:
     def __init__(self, key: bytes, file: Union[str, RawIOBase, BufferedIOBase], chunksize: int = 65536) -> None:
+        if isinstance(file, StringIO) or isinstance(file, TextIOBase):
+            raise TypeError("File must be a binary file")
         self.file = file
 
     def seek(self, *args, whence=os.SEEK_SET):
