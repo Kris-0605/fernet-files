@@ -322,3 +322,4 @@ def test_random_write_withclose_withwith(unit_test: TestFernetFiles, filename: s
                 
 if __name__ == '__main__':
     unittest.main()
+    os.remove("test")
