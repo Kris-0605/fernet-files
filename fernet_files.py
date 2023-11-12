@@ -13,9 +13,9 @@ def _add_magic(size: int) -> int:
     
 class FernetFile:
     def __init__(self, key: bytes, file: Union[str, RawIOBase, BufferedIOBase], chunksize: int = 65536) -> None:
+        self.file = file
         if isinstance(file, StringIO) or isinstance(file, TextIOBase):
             raise TypeError("File must be a binary file")
-        self.file = file
         if not isinstance(chunksize, int):
             raise TypeError("Chunksize must be a positive integer")
         if chunksize <= 0:

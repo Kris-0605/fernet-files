@@ -40,6 +40,9 @@ def testing_sizes():
     for _ in range(5):
         yield randint(1000000, 100000000) # 1MiB to 100MiB
 
+def testing_sizes():
+    yield 256
+
 def execute_test(desc: str, test: Callable) -> None:
     if TQDM_AVAILABLE:
         pbar = tqdm(desc=desc, total=441) # magic, must be changing if number of test sizes changes
@@ -221,17 +224,21 @@ def test_seeking(unit_test: TestFernetFiles, fernet_file: fernet_files.FernetFil
             data = input_data[last+x:last+x+size]
             unit_test.assertEqual(fernet_file.seek(x, os.SEEK_CUR), last+x)
             unit_test.assertEqual(fernet_file.read(size), data)
-            unit_test.assertEqual(fernet_file.seek(-x, os.SEEK_CUR), last)
+            unit_test.assertEqual(fernet_file.seek(-x-len(data), os.SEEK_CUR), last)
             unit_test.assertEqual(fernet_file.seek(x, 1), last+x)
             unit_test.assertEqual(fernet_file.read(size), data)
-        for x in (randint(-len(input_data), 0) for _ in range(100)):
+            last += x+len(data)
+        for x in (randint(-len(input_data)+1, 0) for _ in range(100)):
             size = get_size()
-            data = input_data[x-size:x]
-            unit_test.assertEqual(fernet_file.seek(x, os.SEEK_END), len(input_data)+x-1)
+            if x+size < 0:
+                data = input_data[x:x+size]
+            else:
+                data = input_data[x:]
+            unit_test.assertEqual(fernet_file.seek(x, os.SEEK_END), len(input_data)+x)
             unit_test.assertEqual(fernet_file.read(size), data)
-            unit_test.assertEqual(fernet_file.seek(x, 2), len(input_data)+x-1)
+            unit_test.assertEqual(fernet_file.seek(x, 2), len(input_data)+x)
             unit_test.assertEqual(fernet_file.read(size), data)
-    unit_test.assertRaises(ValueError, fernet_file.seek, -1) # Negative
+    unit_test.assertRaises(OSError, fernet_file.seek, -1) # Negative
     unit_test.assertRaises(ValueError, fernet_file.seek, 0, 3) # Invalid whence
 
 def test_seeking_noread(unit_test: TestFernetFiles, fernet_file: fernet_files.FernetFile, chunksize: int, input_data: bytes) -> None:
@@ -248,7 +255,7 @@ def test_seeking_noread(unit_test: TestFernetFiles, fernet_file: fernet_files.Fe
     for x in (randint(-len(input_data), 0) for _ in range(100)):
         unit_test.assertEqual(fernet_file.seek(x, os.SEEK_END), len(input_data)+x-1)
         unit_test.assertEqual(fernet_file.seek(x, 2), len(input_data)+x-1)
-    unit_test.assertRaises(ValueError, fernet_file.seek, -1) # Negative
+    unit_test.assertRaises(OSError, fernet_file.seek, -1) # Negative
     unit_test.assertRaises(ValueError, fernet_file.seek, 0, 3) # Invalid whence
 
 def test_seeking_bytesio(unit_test: TestFernetFiles, fernet_file: fernet_files.FernetFile, chunksize: int, input_data: bytes) -> None:
