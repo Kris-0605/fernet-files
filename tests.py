@@ -90,7 +90,7 @@ class TestFernetFiles(unittest.TestCase):
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
                 self.assertRaises(ValueError, fernet_file.write, input_data)
-            test_random_write_withclose(self, "test", input_data)
+            test_random_write_withclose(self, "test", chunksize, input_data)
         execute_test("test_file_nowith_readwrite", test)
 
     def test_file_nowith_readonly(self):
@@ -157,7 +157,7 @@ class TestFernetFiles(unittest.TestCase):
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
                 self.assertRaises(ValueError, fernet_file.write, input_data)
-            test_random_write_withclose_withwith(self, "test", input_data)
+            test_random_write_withclose_withwith(self, "test", chunksize, input_data)
         execute_test("test_file_with_readwrite", test)
 
     def test_file_with_readonly(self):
@@ -309,22 +309,22 @@ def test_random_writes(unit_test: TestFernetFiles, fernet_file: fernet_files.Fer
     unit_test.assertEqual(fernet_file.read(), input_data) # if whole file good then all our writes worked
     return input_data
 
-def test_random_write_withclose(unit_test: TestFernetFiles, filename: str, input_data: bytes) -> None:
+def test_random_write_withclose(unit_test: TestFernetFiles, filename: str, chunksize: int, input_data: bytes) -> None:
     key = fernet_files.FernetFile.generate_key()
     with open(filename, "wb+") as f:
         fernet_file = fernet_files.FernetFile(key, f)
-        input_data = test_random_writes(unit_test, fernet_file, input_data)
+        input_data = test_random_writes(unit_test, fernet_file, chunksize, input_data)
         fernet_file.close()
     with open(filename, "rb") as f:
         fernet_file = fernet_files.FernetFile(key, f)
         unit_test.assertEqual(fernet_file.read(), input_data)
         fernet_file.close()
 
-def test_random_write_withclose_withwith(unit_test: TestFernetFiles, filename: str, input_data: bytes) -> None:
+def test_random_write_withclose_withwith(unit_test: TestFernetFiles, filename: str, chunksize: int, input_data: bytes) -> None:
     key = fernet_files.FernetFile.generate_key()
     with open(filename, "wb+") as f:
         with fernet_files.FernetFile(key, f) as fernet_file:
-            input_data = test_random_writes(unit_test, fernet_file, input_data)
+            input_data = test_random_writes(unit_test, fernet_file, chunksize, input_data)
     with open(filename, "rb") as f:
         with fernet_files.FernetFile(key, f) as fernet_file:
             unit_test.assertEqual(fernet_file.read(), input_data)
