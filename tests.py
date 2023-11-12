@@ -254,9 +254,10 @@ def test_seeking_noread(unit_test: TestFernetFiles, fernet_file: fernet_files.Fe
         unit_test.assertEqual(fernet_file.seek(x, os.SEEK_CUR), last+x)
         unit_test.assertEqual(fernet_file.seek(-x, os.SEEK_CUR), last)
         unit_test.assertEqual(fernet_file.seek(x, 1), last+x)
-    for x in (randint(-len(input_data), 0) for _ in range(100)):
-        unit_test.assertEqual(fernet_file.seek(x, os.SEEK_END), len(input_data)+x-1)
-        unit_test.assertEqual(fernet_file.seek(x, 2), len(input_data)+x-1)
+        last += x
+    for x in (randint(-len(input_data)+1, 0) for _ in range(100)):
+        unit_test.assertEqual(fernet_file.seek(x, os.SEEK_END), len(input_data)+x)
+        unit_test.assertEqual(fernet_file.seek(x, 2), len(input_data)+x)
     unit_test.assertRaises(OSError, fernet_file.seek, -1) # Negative
     unit_test.assertRaises(ValueError, fernet_file.seek, 0, 3) # Invalid whence
 
