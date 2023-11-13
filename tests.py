@@ -64,8 +64,8 @@ class TestFernetFiles(unittest.TestCase):
         self.assertEqual(len(urlsafe_b64decode(key)), 32)
         Fernet(key) # valid key
         with fernet_files.FernetFile(Fernet.generate_key(), BytesIO()) as fernet_file: pass # test key from cryptography
-        self.assertRaises(ValueError, Fernet, urlsafe_b64encode(os.urandom(33))) # invalid key
-        self.assertRaises(TypeError, Fernet, int.from_bytes(os.urandom(32), "little"))
+        self.assertRaises(ValueError, fernet_files.FernetFile, urlsafe_b64encode(os.urandom(33))) # invalid key
+        self.assertRaises(TypeError, fernet_files.FernetFile, int.from_bytes(os.urandom(32), "little"))
 
     def test_invalid_file(self):
         for chunksize in testing_sizes():
