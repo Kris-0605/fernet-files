@@ -9,7 +9,11 @@ _magic_dict = {}
 _fernet_for_magic = Fernet(Fernet.generate_key())
 
 def _add_magic(size: int) -> int:
-    pass
+    try:
+        return _magic_dict[size]
+    except:
+        _magic_dict[size] = len(urlsafe_b64decode(_fernet_for_magic.encrypt(bytes(size))))-size
+        return _magic_dict[size]
     
 class FernetFile:
     def __init__(self, key: bytes, file: Union[str, RawIOBase, BufferedIOBase], chunksize: int = 65536) -> None:

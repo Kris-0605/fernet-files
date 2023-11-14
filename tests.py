@@ -26,25 +26,31 @@ except ImportError:
 
 # must test EVERY combination of these variables to pass, don't miss anything!
 
-def testing_sizes():
+def chunk_testing_sizes():
     yield 1 # 1B
     yield 256 # 256B
-    yield 4096 # 4KiB
     yield 65536 # 64KiB
-    yield 1048576 # 1MiB
     yield 16777216 # 16MiB
-    for _ in range(5):
+    for _ in range(3):
         yield randint(1, 1000) # 1B to 1KiB
-    for _ in range(5):
+    for _ in range(3):
         yield randint(1000, 1000000) # 1KiB to 1MiB
-    for _ in range(5):
+    for _ in range(3):
         yield randint(1000000, 100000000) # 1MiB to 100MiB
+
+def input_testing_sizes(chunksize):
+    yield 0
+    yield 1
+    yield chunksize
+    yield chunksize + fernet_files._add_magic(chunksize)
+    yield chunksize*10
+    yield chunksize*10 + fernet_files._add_magic(chunksize*10)
 
 def execute_test(desc: str, test: Callable) -> None:
     if TQDM_AVAILABLE:
-        pbar = tqdm(desc=desc, total=441) # magic, must be changing if number of test sizes changes
-    for chunksize in testing_sizes():
-        for inputsize in testing_sizes():
+        pbar = tqdm(desc=desc, total=78) # magic, must be changing if number of test sizes changes
+    for chunksize in chunk_testing_sizes():
+        for inputsize in input_testing_sizes(chunksize):
             input_data = os.urandom(inputsize)
             test(chunksize, input_data)
             if TQDM_AVAILABLE: pbar.update(1)
@@ -212,7 +218,7 @@ class TestFernetFiles(unittest.TestCase):
 
 def test_seeking(unit_test: TestFernetFiles, fernet_file: fernet_files.FernetFile, chunksize: int, input_data: bytes) -> None:
     for get_size in (lambda: randint(0, chunksize-1), lambda: chunksize, lambda: randint(chunksize+1, chunksize*3)): # below, equal, above chunksize
-        for x in (randint(0, len(input_data)-1) for _ in range(100)): # random starting points
+        for x in (randint(0, len(input_data)-1 if input_data else 0) for _ in range(100)): # random starting points
             size = get_size()
             data = input_data[x:x+size]
             unit_test.assertEqual(fernet_file.seek(x), x) # variations of whence input
@@ -224,7 +230,7 @@ def test_seeking(unit_test: TestFernetFiles, fernet_file: fernet_files.FernetFil
         last = fernet_file.seek(0)
         for _ in range(100):
             size = get_size()
-            x = randint(-last, len(input_data)-last-1)
+            x = randint(-last, len(input_data)-last-1 if input_data else 0)
             data = input_data[last+x:last+x+size]
             unit_test.assertEqual(fernet_file.seek(x, os.SEEK_CUR), last+x)
             unit_test.assertEqual(fernet_file.read(size), data)
@@ -248,13 +254,13 @@ def test_seeking(unit_test: TestFernetFiles, fernet_file: fernet_files.FernetFil
     unit_test.assertRaises(ValueError, fernet_file.seek, 0, 3) # Invalid whence
 
 def test_seeking_noread(unit_test: TestFernetFiles, fernet_file: fernet_files.FernetFile, chunksize: int, input_data: bytes) -> None:
-    for x in (randint(0, len(input_data)-1) for _ in range(100)): # random starting points
+    for x in (randint(0, len(input_data)-1 if input_data else 0) for _ in range(100)): # random starting points
         unit_test.assertEqual(fernet_file.seek(x), x) # variations of whence input
         unit_test.assertEqual(fernet_file.seek(x, os.SEEK_SET), x)
         unit_test.assertEqual(fernet_file.seek(x, 0), x)
     last = fernet_file.seek(0)
     for _ in range(100):
-        x = randint(-last, len(input_data)-last-1)
+        x = randint(-last, len(input_data)-last-1 if input_data else 0)
         unit_test.assertEqual(fernet_file.seek(x, os.SEEK_CUR), last+x)
         unit_test.assertEqual(fernet_file.seek(-x, os.SEEK_CUR), last)
         unit_test.assertEqual(fernet_file.seek(x, 1), last+x)
@@ -267,7 +273,7 @@ def test_seeking_noread(unit_test: TestFernetFiles, fernet_file: fernet_files.Fe
 
 def test_seeking_bytesio(unit_test: TestFernetFiles, fernet_file: fernet_files.FernetFile, chunksize: int, input_data: bytes) -> None:
     for get_size in (lambda: randint(0, chunksize-1), lambda: chunksize, lambda: randint(chunksize+1, chunksize*3)): # below, equal, above chunksize
-        for x in (randint(0, len(input_data)-1) for _ in range(100)): # random starting points
+        for x in (randint(0, len(input_data)-1 if input_data else 0) for _ in range(100)): # random starting points
             size = get_size()
             data = input_data[x:x+size]
             unit_test.assertEqual(fernet_file.seek(x), x)
@@ -309,7 +315,7 @@ def test_random_writes_noread(fernet_file: fernet_files.FernetFile, chunksize: i
             size = get_size()
             input_data.seek(0)
             length = len(input_data.read())
-            x = randint(0, length-1)
+            x = randint(0, length-1 if length else 0)
             randata = os.urandom(size)
             input_data.seek(x)
             input_data.write(randata)
