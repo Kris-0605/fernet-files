@@ -70,11 +70,11 @@ class TestFernetFiles(unittest.TestCase):
         self.assertEqual(len(urlsafe_b64decode(key)), 32)
         Fernet(key) # valid key
         with fernet_files.FernetFile(Fernet.generate_key(), BytesIO()) as fernet_file: pass # test key from cryptography
-        self.assertRaises(ValueError, fernet_files.FernetFile, urlsafe_b64encode(os.urandom(33))) # invalid key
-        self.assertRaises(TypeError, fernet_files.FernetFile, int.from_bytes(os.urandom(32), "little"))
+        self.assertRaises(ValueError, fernet_files.FernetFile, urlsafe_b64encode(os.urandom(33)), BytesIO()) # invalid key
+        self.assertRaises(TypeError, fernet_files.FernetFile, int.from_bytes(os.urandom(32), "little"), BytesIO())
 
     def test_invalid_file(self):
-        for chunksize in testing_sizes():
+        for chunksize in chunk_testing_sizes():
             with open("test", "wt") as invalid_file:
                 self.assertRaises(TypeError, fernet_files.FernetFile, fernet_files.FernetFile.generate_key(), invalid_file, chunksize=chunksize)
 
@@ -238,7 +238,7 @@ def test_seeking(unit_test: TestFernetFiles, fernet_file: fernet_files.FernetFil
             unit_test.assertEqual(fernet_file.seek(x, 1), last+x)
             unit_test.assertEqual(fernet_file.read(size), data)
             last += x+len(data)
-        for x in (randint(-len(input_data)+1, 0) for _ in range(100)):
+        for x in (randint(-len(input_data)+1 if input_data else 0, 0) for _ in range(100)):
             size = get_size()
             if x+size < 0:
                 data = input_data[x:x+size]
@@ -265,7 +265,7 @@ def test_seeking_noread(unit_test: TestFernetFiles, fernet_file: fernet_files.Fe
         unit_test.assertEqual(fernet_file.seek(-x, os.SEEK_CUR), last)
         unit_test.assertEqual(fernet_file.seek(x, 1), last+x)
         last += x
-    for x in (randint(-len(input_data)+1, 0) for _ in range(100)):
+    for x in (randint(-len(input_data)+1 if input_data else 0, 0) for _ in range(100)):
         unit_test.assertEqual(fernet_file.seek(x, os.SEEK_END), len(input_data)+x)
         unit_test.assertEqual(fernet_file.seek(x, 2), len(input_data)+x)
     unit_test.assertRaises(OSError, fernet_file.seek, -1) # Negative
