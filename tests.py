@@ -1,7 +1,7 @@
 import unittest
 import os
 import fernet_files
-from cryptography.fernet import Fernet
+from custom_fernet import FernetNoBase64
 from base64 import urlsafe_b64decode, urlsafe_b64encode
 from io import BytesIO, UnsupportedOperation
 from random import randint
@@ -64,13 +64,13 @@ class TestFernetFiles(unittest.TestCase):
 
     def test_key(self):
         # test generate key
-        self.assertEqual(fernet_files.FernetFile.generate_key, Fernet.generate_key)
+        self.assertEqual(fernet_files.FernetFile.generate_key, FernetNoBase64.generate_key)
         key = fernet_files.FernetFile.generate_key()
         self.assertIsInstance(key, bytes)
-        self.assertEqual(len(urlsafe_b64decode(key)), 32)
-        Fernet(key) # valid key
-        with fernet_files.FernetFile(Fernet.generate_key(), BytesIO()) as fernet_file: pass # test key from cryptography
-        self.assertRaises(ValueError, fernet_files.FernetFile, urlsafe_b64encode(os.urandom(33)), BytesIO()) # invalid key
+        self.assertEqual(len(key), 32)
+        FernetNoBase64(key) # valid key
+        with fernet_files.FernetFile(FernetNoBase64.generate_key(), BytesIO()) as fernet_file: pass
+        self.assertRaises(ValueError, fernet_files.FernetFile, os.urandom(33), BytesIO()) # invalid key
         self.assertRaises(TypeError, fernet_files.FernetFile, int.from_bytes(os.urandom(32), "little"), BytesIO())
 
     def test_invalid_file(self):
