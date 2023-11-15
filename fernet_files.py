@@ -17,6 +17,7 @@ def _add_magic(size: int) -> int:
     
 class FernetFile:
     def __init__(self, key: bytes, file: Union[str, RawIOBase, BufferedIOBase], chunksize: int = 65536) -> None:
+        self.fernet = Fernet(key)
         self.file = file
         if isinstance(file, StringIO) or isinstance(file, TextIOBase):
             raise TypeError("File must be a binary file")
@@ -39,7 +40,8 @@ class FernetFile:
         return self.file.write(*args, **kwargs)
     
     def close(self) -> None:
-        self.file.close()
+        try: self.file.close()
+        except: pass
 
     generate_key = Fernet.generate_key
 
