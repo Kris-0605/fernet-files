@@ -67,10 +67,12 @@ class TestFernetFiles(unittest.TestCase):
         key = fernet_files.FernetFile.generate_key()
         self.assertIsInstance(key, bytes)
         self.assertEqual(len(key), 32)
-        FernetNoBase64(key) # valid key
+        f = FernetNoBase64(key) # valid key
         with fernet_files.FernetFile(FernetNoBase64.generate_key(), BytesIO()) as fernet_file: pass
         self.assertRaises(ValueError, fernet_files.FernetFile, os.urandom(33), BytesIO()) # invalid key
         self.assertRaises(TypeError, fernet_files.FernetFile, int.from_bytes(os.urandom(32), "little"), BytesIO())
+        # test with FernetNoBase64 object
+        with fernet_files.FernetFile(f, BytesIO()) as fernet_file: pass
 
     def test_invalid_file(self):
         for chunksize in chunk_testing_sizes():

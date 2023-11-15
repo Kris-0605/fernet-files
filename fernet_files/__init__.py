@@ -15,8 +15,8 @@ def _add_magic(size: int) -> int:
         return _magic_dict[size]
     
 class FernetFile:
-    def __init__(self, key: bytes, file: str | RawIOBase | BufferedIOBase, chunksize: int = 65536) -> None:
-        self.fernet = FernetNoBase64(key)
+    def __init__(self, key: bytes | FernetNoBase64, file: str | RawIOBase | BufferedIOBase, chunksize: int = 65536) -> None:
+        self.fernet = key if isinstance(key, FernetNoBase64) else FernetNoBase64(key)
         self.file = file
         if isinstance(file, StringIO) or isinstance(file, TextIOBase):
             raise TypeError("File must be a binary file")
