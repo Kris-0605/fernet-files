@@ -6,6 +6,8 @@ Fernet encryption is pretty cool, however, the entire file has to be loaded into
 
 At this time, Fernet Files only supports the `read`, `write`, `seek` and `close` methods (as well as being context managed so you can close them with a `with` statement), so it is not a true file-like object. Maybe at some point in future (once I've learnt C) I'll come back and make a version of this that returns a true file-like object.
 
+Additionally, Fernet Files does not use the version of Fernet that the cryptography module provides. This is because of base64 - cryptography.fernet.Fernet outputs encrypted data as base64 and takes base64 as input for decrypted data. Base64 uses 33% more space than storing data as its raw binary, so we obviously want to decode the base64 output in order to save space. However, decoding base64 that has just been encoded is a waste of processing power, and a quick look at Fernet's source code will show you that the data is present in binary form before being encoded. For this reason, `custom_fernet.py` includes the class `FernetNoBase64`, which does exactly was it says on the tin: raw output and raw input, no base64 required or supported. The processing time this saves is significant: in my own rough testing I've found that this provides between a 50% and 150% speedup depending on the context.
+
 ## Installation
 
 It doesn't exist yet.
@@ -18,9 +20,9 @@ The only class you should be interacting with.
 
 Parameters:
 
--   **key** - The key for Fernet encryption/decrytion. Accepts either a key, or a `cryptography.fernet.Fernet` object.
--   -   "Fernet key must be 32 url-safe base64-encoded bytes." Get using `fernet_files.FernetFile.generate_key()` or `cryptography.fernet.Fernet.generate_key()` and then store somewhere secure
--   -   Alternatively, pass in a `cryptography.fernet.Fernet` if you don't trust the module with your key
+-   **key** - The key for Fernet encryption/decrytion. Accepts either a key, or a `custom_fernet.FernetNoBase64` object.
+-   -   A key must be 32 random bytes. Get using `fernet_files.FernetFile.generate_key()` or `custom_fernet.FernetNoBase64.generate_key()` and then store somewhere secure
+-   -   Alternatively, pass in a `custom_fernet.FernetNoBase64` object if you don't trust the module with your key
 -   **file** - The file to read/write to. Accepts both filenames as strings and file-like objects. If you want to do something like making the file read-only, pass in a file object, because filenames are opened in read and write mode. Any files should be open in binary mode.
 -   **chunksize** - The size of chunks in bytes. Bigger chunks use more memory and take longer to read or write, but smaller chunks can be very slow when you try and read lots of them consecutively. Defaults to 64KiB.
 
@@ -58,13 +60,13 @@ Writes anything that hasn't been encrypted yet and closes the file. Returns `Non
 
 #### static method `fernet_files.FernetFile.generate_key()`
 
-Static method. Acts as a pointer to `cryptography.fernet.Fernet.generate_key()` so you can generate a key without importing `cryptography`.
+Static method. Acts as a pointer to `custom_fernet.FernetNoBase64.generate_key()`, which itself just calls `os.urandom(32)`.
 
 ## Docs for stuff you shouldn't touch
 
-#### cryptography.fernet.Fernet `fernet_files.FernetFile.fernet`
+#### custom_fernet.FernetNoBase64 `fernet_files.FernetFile.fernet`
 
-Fernet object created from the key provided. You can technically use it to encrypt data with your key, or you could replace it to use a different key, but I would really recommend you didn't.
+FernetNoBase64 object created from the key provided. You can technically use it to encrypt data with your key, or you could replace it to use a different key, but I would really recommend you didn't.
 
 #### method `fernet_files.FernetFile.__enter__(self)`
 
@@ -86,6 +88,6 @@ This might be incorrect because it comes from my own experimentation and observa
 
 The function that should be used to get the number of bytes to read, dependent on the size of the input data (the chunk size, except for the last chunk, where the magic number is irrelevant). If the value is in the dictionary, this will return the size plus magic number, returning the number of bytes to read. If the value is not in the dictionary, the magic number will be calculated by completing an encryption operation on some empty data of the desired size.
 
-### cryptography.fernet.Fernet `fernet_files._fernet_for_magic`
+### custom_fernet.FernetNoBase64 `fernet_files._fernet_for_magic`
 
 Used by `_add_magic`. Don't touch it.
