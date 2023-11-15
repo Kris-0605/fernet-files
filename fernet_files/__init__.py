@@ -1,4 +1,4 @@
-from custom_fernet import FernetNoBase64
+from fernet_files.custom_fernet import FernetNoBase64
 import os
 from typing import Type
 from io import BytesIO, RawIOBase, BufferedIOBase, StringIO, TextIOBase

@@ -1,8 +1,7 @@
 import unittest
 import os
 import fernet_files
-from custom_fernet import FernetNoBase64
-from base64 import urlsafe_b64decode, urlsafe_b64encode
+from fernet_files.custom_fernet import FernetNoBase64
 from io import BytesIO, UnsupportedOperation
 from random import randint
 from typing import Callable
