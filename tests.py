@@ -89,6 +89,7 @@ class TestFernetFiles(unittest.TestCase):
                 test_random_reads(self, fernet_file, chunksize, input_data)
                 test_other_read(self, fernet_file, input_data)
                 input_data = test_random_writes(self, fernet_file, chunksize, input_data)
+                test_data_is_encrypted(self, "test", fernet_file, input_data)
                 fernet_file.close()
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
@@ -110,6 +111,7 @@ class TestFernetFiles(unittest.TestCase):
                 test_seeking(self, fernet_file, chunksize, input_data)
                 test_random_reads(self, fernet_file, chunksize, input_data)
                 test_other_read(self, fernet_file, input_data)
+                test_data_is_encrypted(self, "test", fernet_file, input_data)
                 fernet_file.close()
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
@@ -144,6 +146,7 @@ class TestFernetFiles(unittest.TestCase):
                 test_random_reads(self, fernet_file, chunksize, input_data)
                 test_other_read(self, fernet_file, input_data)
                 input_data = test_random_writes(self, fernet_file, chunksize, input_data)
+                test_data_is_encrypted(self, "test", fernet_file, input_data)
                 fernet_file.close()
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
@@ -161,6 +164,7 @@ class TestFernetFiles(unittest.TestCase):
                     test_random_reads(self, fernet_file, chunksize, input_data)
                     test_other_read(self, fernet_file, input_data)
                     input_data = test_random_writes(self, fernet_file, chunksize, input_data)
+                    test_data_is_encrypted(self, "test", fernet_file, input_data)
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
                 self.assertRaises(ValueError, fernet_file.write, input_data)
@@ -180,6 +184,7 @@ class TestFernetFiles(unittest.TestCase):
                     test_seeking(self, fernet_file, chunksize, input_data)
                     test_random_reads(self, fernet_file, chunksize, input_data)
                     test_other_read(self, fernet_file, input_data)
+                    test_data_is_encrypted(self, "test", fernet_file, input_data)
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
         execute_test("test_file_with_readonly", test)
@@ -211,6 +216,7 @@ class TestFernetFiles(unittest.TestCase):
                     test_random_reads(self, fernet_file, chunksize, input_data)
                     test_other_read(self, fernet_file, input_data)
                     input_data = test_random_writes(self, fernet_file, chunksize, input_data)
+                    test_data_is_encrypted(self, "test", fernet_file, input_data)
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
                 self.assertRaises(ValueError, fernet_file.write, input_data)
@@ -351,6 +357,16 @@ def test_random_write_withclose_withwith(unit_test: TestFernetFiles, filename: s
     with open(filename, "rb") as f:
         with fernet_files.FernetFile(key, f) as fernet_file:
             unit_test.assertEqual(fernet_file.read(), input_data)
+
+def test_data_is_encrypted(unit_test: TestFernetFiles, file: str | BytesIO, fernet_file: fernet_files.FernetFile, input_data: bytes) -> None:
+    if isinstance(file, str):
+        with open(file, "rb") as f:
+            output_data = f.read() # Encrypted data
+    else:
+        file.seek(0)
+        output_data = file.read()
+    fernet_file.seek(0)
+    unit_test.assertNotEqual(input_data, output_data)
                 
 if __name__ == '__main__':
     unittest.main()
