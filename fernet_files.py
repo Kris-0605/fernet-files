@@ -1,23 +1,22 @@
-from cryptography.fernet import Fernet
-from base64 import urlsafe_b64decode, urlsafe_b64encode
+from custom_fernet import FernetNoBase64
 import os
 from typing import Union, Optional, Type
 from io import BytesIO, RawIOBase, BufferedIOBase, StringIO, TextIOBase
 from types import TracebackType
 
 _magic_dict = {}
-_fernet_for_magic = Fernet(Fernet.generate_key())
+_fernet_for_magic = FernetNoBase64(FernetNoBase64.generate_key())
 
 def _add_magic(size: int) -> int:
     try:
         return _magic_dict[size]
     except:
-        _magic_dict[size] = len(urlsafe_b64decode(_fernet_for_magic.encrypt(bytes(size))))-size
+        _magic_dict[size] = len(_fernet_for_magic.encrypt(bytes(size)))-size
         return _magic_dict[size]
     
 class FernetFile:
     def __init__(self, key: bytes, file: Union[str, RawIOBase, BufferedIOBase], chunksize: int = 65536) -> None:
-        self.fernet = Fernet(key)
+        self.fernet = FernetNoBase64(key)
         self.file = file
         if isinstance(file, StringIO) or isinstance(file, TextIOBase):
             raise TypeError("File must be a binary file")
@@ -43,7 +42,7 @@ class FernetFile:
         try: self.file.close()
         except: pass
 
-    generate_key = Fernet.generate_key
+    generate_key = FernetNoBase64.generate_key
 
     def __enter__(self) -> "FernetFile":
         return self
