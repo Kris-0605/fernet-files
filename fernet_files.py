@@ -1,6 +1,6 @@
 from custom_fernet import FernetNoBase64
 import os
-from typing import Union, Optional, Type
+from typing import Type
 from io import BytesIO, RawIOBase, BufferedIOBase, StringIO, TextIOBase
 from types import TracebackType
 
@@ -15,7 +15,7 @@ def _add_magic(size: int) -> int:
         return _magic_dict[size]
     
 class FernetFile:
-    def __init__(self, key: bytes, file: Union[str, RawIOBase, BufferedIOBase], chunksize: int = 65536) -> None:
+    def __init__(self, key: bytes, file: str | RawIOBase | BufferedIOBase, chunksize: int = 65536) -> None:
         self.fernet = FernetNoBase64(key)
         self.file = file
         if isinstance(file, StringIO) or isinstance(file, TextIOBase):
@@ -47,7 +47,7 @@ class FernetFile:
     def __enter__(self) -> "FernetFile":
         return self
 
-    def __exit__(self, exc_type: Optional[Type[BaseException]], exc_value: Optional[BaseException], exc_traceback: Optional[TracebackType]) -> None:
+    def __exit__(self, exc_type: Type[BaseException] | None, exc_value: BaseException | None, exc_traceback: TracebackType | None) -> None:
         self.close()
 
     def __del__(self) -> None:
