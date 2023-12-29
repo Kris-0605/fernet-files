@@ -12,7 +12,7 @@ Additionally, Fernet Files does not use the version of Fernet that the cryptogra
 
 It doesn't exist yet.
 
-## Docs
+## Docs - NOT UP TO DATE, WILL FIX LATER
 
 ### class `fernet_files.FernetFile(self, key, file, chunksize=65536)`
 

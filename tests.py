@@ -15,7 +15,7 @@ except ImportError:
 # BytesIO or normal file
 # with or nowith
 # invalid, valid, valid from cryptography, incorrect key
-# read-only, write-only, or both file
+# read-only, or read-write file
 # chunksize: different, invalid
 # reading different sizes
 # input data: smaller than, equal to and larger than chunk size, empty
@@ -41,9 +41,9 @@ def input_testing_sizes(chunksize):
     yield 0
     yield 1
     yield chunksize
-    yield chunksize + fernet_files._add_magic(chunksize)
+    yield chunksize + 73 - (chunksize % 16)
     yield chunksize*10
-    yield chunksize*10 + fernet_files._add_magic(chunksize*10)
+    yield chunksize*10 + 73 - (chunksize*10 % 16)
 
 def execute_test(desc: str, test: Callable) -> None:
     if TQDM_AVAILABLE:
@@ -101,7 +101,7 @@ class TestFernetFiles(unittest.TestCase):
     def test_file_nowith_readonly(self):
         def test(chunksize, input_data):
             key = fernet_files.FernetFile.generate_key()
-            with open("test", "wb") as f:
+            with open("test", "wb+") as f:
                 fernet_file = fernet_files.FernetFile(key, f, chunksize)
                 fernet_file.write(input_data)
                 fernet_file.close()
@@ -118,30 +118,12 @@ class TestFernetFiles(unittest.TestCase):
                 self.assertRaises(ValueError, fernet_file.read)
         execute_test("test_file_nowith_readonly", test)
 
-    def test_file_nowith_writeonly(self):
-        def test(chunksize, input_data):
-            key = fernet_files.FernetFile.generate_key()
-            with open("test", "wb") as f:
-                fernet_file = fernet_files.FernetFile(key, f, chunksize)
-                fernet_file.write(input_data)
-                fernet_file.seek(0)
-                test_seeking_noread(self, fernet_file, chunksize, input_data)
-                self.assertRaises(UnsupportedOperation, fernet_file.read)
-                input_data = test_random_writes_noread(fernet_file, chunksize, input_data)
-                fernet_file.close()
-                self.assertRaises(ValueError, fernet_file.seek, 0)
-                self.assertRaises(ValueError, fernet_file.write, input_data)
-            with open("test", "rb") as f: # Have to re-open file to test writing worked
-                fernet_file = fernet_files.FernetFile(key, f, chunksize)
-                self.assertEqual(fernet_file.read(), input_data)
-                fernet_file.close()
-        execute_test("test_file_nowith_writeonly", test)
-
     def test_bytesio_nowith(self):
         def test(chunksize, input_data):
             key = fernet_files.FernetFile.generate_key()
-            with BytesIO(input_data) as f:
+            with BytesIO() as f:
                 fernet_file = fernet_files.FernetFile(key, f, chunksize)
+                fernet_file.write(input_data)
                 fernet_file.seek(0)
                 test_seeking_bytesio(self, fernet_file, chunksize, input_data)
                 test_random_reads(self, fernet_file, chunksize, input_data)
@@ -175,7 +157,7 @@ class TestFernetFiles(unittest.TestCase):
     def test_file_with_readonly(self):
         def test(chunksize, input_data):
             key = fernet_files.FernetFile.generate_key()
-            with open("test", "wb") as f:
+            with open("test", "wb+") as f:
                 with fernet_files.FernetFile(key, f, chunksize) as fernet_file:
                     fernet_file.write(input_data)
             with open("test", "rb") as f:
@@ -190,28 +172,12 @@ class TestFernetFiles(unittest.TestCase):
                 self.assertRaises(ValueError, fernet_file.read)
         execute_test("test_file_with_readonly", test)
 
-    def test_file_with_writeonly(self):
-        def test(chunksize, input_data):
-            key = fernet_files.FernetFile.generate_key()
-            with open("test", "wb") as f:
-                with fernet_files.FernetFile(key, f, chunksize) as fernet_file:
-                    fernet_file.write(input_data)
-                    fernet_file.seek(0)
-                    test_seeking_noread(self, fernet_file, chunksize, input_data)
-                    self.assertRaises(UnsupportedOperation, fernet_file.read)
-                    input_data = test_random_writes_noread(fernet_file, chunksize, input_data)
-                self.assertRaises(ValueError, fernet_file.seek, 0)
-                self.assertRaises(ValueError, fernet_file.write, input_data)
-            with open("test", "rb") as f: # Have to re-open file to test writing worked
-                with fernet_files.FernetFile(key, f, chunksize) as fernet_file:
-                    self.assertEqual(fernet_file.read(), input_data)
-        execute_test("test_file_with_writeonly", test)
-
     def test_bytesio_with(self):
         def test(chunksize, input_data):
             key = fernet_files.FernetFile.generate_key()
-            with BytesIO(input_data) as f:
+            with BytesIO() as f:
                 with fernet_files.FernetFile(key, f, chunksize) as fernet_file:
+                    fernet_file.write(input_data)
                     fernet_file.seek(0)
                     test_seeking_bytesio(self, fernet_file, chunksize, input_data)
                     test_random_reads(self, fernet_file, chunksize, input_data)
@@ -284,9 +250,9 @@ def test_seeking_bytesio(unit_test: TestFernetFiles, fernet_file: fernet_files.F
             size = get_size()
             data = input_data[x:x+size]
             unit_test.assertEqual(fernet_file.seek(x), x)
-            unit_test.assertEqual(fernet_file.read(size), data)
-            unit_test.assertEqual(fernet_file.seek(x, -1), x) # ignored whence
-            unit_test.assertEqual(fernet_file.read(size), data)
+            y = fernet_file.read(size)
+            unit_test.assertEqual(y, data)
+            unit_test.assertRaises(ValueError, fernet_file.seek, x, -1) # ignored whence
     unit_test.assertRaises(ValueError, fernet_file.seek, -1) # Negative
 
 def test_random_reads(unit_test: TestFernetFiles, fernet_file: fernet_files.FernetFile, chunksize: int, input_data: bytes) -> None:
@@ -328,8 +294,7 @@ def test_random_writes_noread(fernet_file: fernet_files.FernetFile, chunksize: i
             input_data.write(randata)
             fernet_file.seek(x)
             fernet_file.write(randata)
-    input_data.seek(0)
-    return input_data.read()
+    return input_data.getvalue()
 
 def test_random_writes(unit_test: TestFernetFiles, fernet_file: fernet_files.FernetFile, chunksize: int, input_data: bytes) -> bytes:
     input_data = test_random_writes_noread(fernet_file, chunksize, input_data)
