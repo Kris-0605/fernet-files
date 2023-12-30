@@ -28,6 +28,13 @@ with FernetFile(key, "filename.bin") as f:
     f.read() # Returns b'123456789'
 ```
 
+## Requirements
+
+- cryptography >= 41.0.4 (might break in the future, I'll try and keep an eye on it)
+- Python 3.10 or greater (3.10, 3.11 and 3.12 tested)
+
+custom_fernet.py is based on cryptography 41.0.4. If they change it in the future, it might break this module, but if it does then make an issue and I'll try and fix it.
+
 ## Installation
 
 I haven't put it on pip yet, but feel free to clone the repository. The module is contained within the fernet_files folder and you can copy that to the directory where your script is.
