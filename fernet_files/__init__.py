@@ -4,18 +4,6 @@ from io import BytesIO, RawIOBase, BufferedIOBase, StringIO, TextIOBase, Unsuppo
 
 # DON'T TOUCH UNLESS ABSOLUTELY NECESSARY
 META_SIZE = 8
-'''DON'T TOUCH UNLESS ABSOLUTELY NECESSARY
-
-The size of a file's metadata in bytes is 2*META_SIZE.
-The first number is a little-endian unsigned (META_SIZE*8)-bit integer, representing how many chunks are in the file.
-The second number is a little-endian unsigned (META_SIZE*8)-bit integer, representing the size of the last chunk's padding.
-This simultaneously limits both chunksize and the number of chunks a file can have:
-- A chunk can have a max size of (2**META_SIZE)-1 bytes
-- A file can have a max (2**META_SIZE)-1 chunks
-You have the power to change this value in order to bypass these limitations for future-proofing, HOWEVER,
-The value you use must be consistent across reading and writing the same file.
-Therefore, I recommend you don't change it unless you absolutely have to, for compatibility reasons.
-TL;DR if write file with one META_SIZE, must read file with same META_SIZE, and you must store it yourself.'''
 
 DEFAULT_CHUNKSIZE = 4096
 

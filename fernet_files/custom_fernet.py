@@ -3,22 +3,23 @@
 #
 # This file contains a modified version of cryptography.fernet.Fernet
 # The purpose of this modification is to remove base64 encoding/decoding
-# While this is required for the Fernet spec, it adds processing and storage overhead
+# While base64 is required for the Fernet spec, it adds processing and storage overhead
 # Since I will be storing the data as binary anyway, encoding and then decoding myself felt unnecessary
 # I have found that removing base64 encoding and decoding can make encryption/decryption speed twice as fast in some cases
 #
 # This code is based on https://github.com/pyca/cryptography/blob/f558199dbf33ccbf6dce8150c2cd4658686d6018/src/cryptography/fernet.py
-# Therefore, it is subject to the same licenses as the above link
+# Therefore, the original code is subject to the same licenses as the above link
 # Please see the cryptography library's license at the time of the linked commit for more information
 #
 # Any code that I have modifed is labelled with a comment
+# One change is that I have removed all comments which I didn't create
 
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography import utils
 from cryptography.hazmat.primitives import hashes, padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.hmac import HMAC
-from os import urandom
+from os import urandom # Changes to imports
 from time import time
 
 class FernetNoBase64(Fernet):
@@ -29,6 +30,7 @@ class FernetNoBase64(Fernet):
         # Modifies input validation to match new input
         if len(key) != 32:
             raise ValueError(
+                # Modified error messages
                 "Fernet key must be 32 bytes"
             )
         if not isinstance(key, bytes):
