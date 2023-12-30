@@ -231,7 +231,6 @@ class FernetFile:
     
     @_pos_pointer.setter
     def _pos_pointer(self, value: int) -> None:
-        self.value = value
         self.__pos_pointer = value
         if self.__pos_pointer >= self.__data_chunksize:
             chunk_difference = self.__pos_pointer//self.__data_chunksize
