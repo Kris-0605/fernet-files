@@ -97,6 +97,8 @@ Static method. Acts as a pointer to `custom_fernet.FernetNoBase64.generate_key()
 
 "Is the file writeable or not". True if you can write to the file, False if you can't. Will only be False if you passed in a read-only file. Please don't modify this. Technically you could pass in a read-write file and then set this to False manually to lock the file from being written to, but please only do that if you know what you're doing.
 
+### Misc
+
 #### int `fernet_files.META_SIZE`
 
 DON'T TOUCH UNLESS ABSOLUTELY NECESSARY. Defaults to 8. META_SIZE represented as $M$ in formulae.
@@ -126,9 +128,7 @@ The chunksize that is used by default.
 
 ## Docs for stuff you shouldn't touch
 
-#### custom_fernet.FernetNoBase64 `fernet_files.FernetFile.__fernet`
-
-FernetNoBase64 object created from the key provided. Used for encryption and decryption.
+### `fernet_files.FernetFile`
 
 #### (RawIOBase or BufferedIOBase or BytesIO) `fernet_files.FernetFile.__file`
 
@@ -201,3 +201,9 @@ Calls `self.close`, returns `None`.
 #### method `fernet_files.FernetFile.__del__(self)`
 
 Calls `self.close`, returns `None`.
+
+### Misc
+
+#### custom_fernet.FernetNoBase64 `fernet_files.FernetFile.__fernet`
+
+FernetNoBase64 object created from the key provided. Used for encryption and decryption.
