@@ -1,18 +1,14 @@
-# THIS CODE IS MOSTLY NOT MINE
-# THIS CODE IS TAKEN FROM THE CRYPTOGRAPHY LIBRARY
-#
-# This file contains a modified version of cryptography.fernet.Fernet
-# The purpose of this modification is to remove base64 encoding/decoding
-# While base64 is required for the Fernet spec, it adds processing and storage overhead
-# Since I will be storing the data as binary anyway, encoding and then decoding myself felt unnecessary
-# I have found that removing base64 encoding and decoding can make encryption/decryption speed twice as fast in some cases
+# This file contains a modified version of code found within cryptography.fernet.Fernet.
+# The purpose of this modification is to remove base64 encoding/decoding.
+# While base64 is required for the Fernet spec, it adds processing and storage overhead not necessary when storing in files.
+# In situations where it is not required, removing base64 from the class increases speed of execution.
 #
 # This code is based on https://github.com/pyca/cryptography/blob/f558199dbf33ccbf6dce8150c2cd4658686d6018/src/cryptography/fernet.py
-# Therefore, the original code is subject to the same licenses as the above link
-# Please see the cryptography library's license at the time of the linked commit for more information
+# Therefore, the original code is subject to the same licenses as the above link.
+# Please see the cryptography library's license at the time of the linked commit for more information.
 #
-# Any code that I have modifed is labelled with a comment
-# One change is that I have removed all comments which I didn't create
+# Any code that I have modifed is labelled with a comment.
+# I have removed all comments which I didn't create.
 
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography import utils
@@ -25,9 +21,9 @@ from time import time
 class FernetNoBase64(Fernet):
     def __init__(
         self,
-        key: bytes # Expects raw key, not base 64 encoded
-    ) -> None: # Remove unused parameter backend
-        # Modifies input validation to match new input
+        key: bytes # Modified to expect raw key, not base64 encoded key
+    ) -> None: # Removal of unused parameter backend
+        # Modified input validation to match new input
         if len(key) != 32:
             raise ValueError(
                 # Modified error messages
@@ -41,14 +37,14 @@ class FernetNoBase64(Fernet):
         self._signing_key = key[:16]
         self._encryption_key = key[16:]
 
-    @staticmethod # We don't need the class, why was this a class method?
+    @staticmethod # Conversion from class methdo to static method
     def generate_key() -> bytes:
-        return urandom(32) # No encoding
+        return urandom(32) # No base64 encoding
 
     @staticmethod
     def _get_unverified_token_data(data: bytes) -> tuple[int, bytes]:
-        # Modify type hinting so _get_unverified_token_data can't take str
-        if not isinstance(data, bytes): # Modify input validation
+        # Modified type hinting so _get_unverified_token_data can't take str
+        if not isinstance(data, bytes): # Modified input validation
             raise TypeError("data must be bytes")
 
         if not data or data[0] != 0x80:
@@ -83,10 +79,10 @@ class FernetNoBase64(Fernet):
         h = HMAC(self._signing_key, hashes.SHA256())
         h.update(basic_parts)
         hmac = h.finalize()
-        return basic_parts + hmac # Doesn't encode to base64, since we're decoding it anyway
+        return basic_parts + hmac # Removal of base64 encoding
     
-    def decrypt(self, token: bytes, ttl: int | None = None) -> bytes: # Modify type hinting so decrypt can't take str
-        timestamp, data = FernetNoBase64._get_unverified_token_data(token) # Modify which class is referenced
+    def decrypt(self, token: bytes, ttl: int | None = None) -> bytes: # Modified type hinting so decrypt can't accept str
+        timestamp, data = FernetNoBase64._get_unverified_token_data(token) # Modified which class is referenced
         if ttl is None:
             time_info = None
         else:
@@ -95,15 +91,15 @@ class FernetNoBase64(Fernet):
 
     def decrypt_at_time(
         self, token: bytes, ttl: int, current_time: int
-    ) -> bytes: # Modify type hinting so decrypt_at_time can't take str
+    ) -> bytes: # Modified type hinting so decrypt_at_time can't take str
         if ttl is None:
             raise ValueError(
                 "decrypt_at_time() can only be used with a non-None ttl"
             )
-        timestamp, data = FernetNoBase64._get_unverified_token_data(token) # Modify which class is referenced
+        timestamp, data = FernetNoBase64._get_unverified_token_data(token) # Modified which class is referenced
         return self._decrypt_data(data, timestamp, (ttl, current_time))
 
-    def extract_timestamp(self, token: bytes) -> int: # Modify type hinting so extract_timestamp can't take str
-        timestamp, data = FernetNoBase64._get_unverified_token_data(token) # Modify which class is referenced
+    def extract_timestamp(self, token: bytes) -> int: # Modified type hinting so extract_timestamp can't take str
+        timestamp, data = FernetNoBase64._get_unverified_token_data(token) # Modified which class is referenced
         self._verify_signature(data)
         return timestamp

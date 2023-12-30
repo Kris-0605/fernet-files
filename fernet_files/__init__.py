@@ -2,7 +2,7 @@ from fernet_files.custom_fernet import FernetNoBase64
 import os
 from io import BytesIO, RawIOBase, BufferedIOBase, StringIO, TextIOBase, UnsupportedOperation
 
-# DON'T TOUCH UNLESS ABSOLUTELY NECESSARY
+# Don't modify without reading documentation
 META_SIZE = 8
 
 DEFAULT_CHUNKSIZE = 4096
@@ -22,6 +22,7 @@ class FernetFile:
         else:
             raise TypeError("File must be binary file or a filename")
         
+        # chunksize validation
         if not isinstance(chunksize, int):
             raise TypeError("Invalid chunksize, must be integer greater than 0")
         if chunksize <= 0:
@@ -44,7 +45,6 @@ class FernetFile:
 
         self.__data_chunksize = chunksize # the size of the data in chunks
         self.__chunksize = chunksize + 73 - (chunksize % 16) # the size of chunks when written to disk
-        # Uses a magic formula for Fernet metadata size that I got by trial-and-error
         
         self.__chunk_modified = False
         self._pos_pointer = 0 # your position inside a chunk
@@ -59,7 +59,7 @@ class FernetFile:
     def __read_chunk(self) -> BytesIO:
         if self.__chunk_modified:
             return self.__chunk
-            # "But what if the chunk isn't loaded!" well how did you modify it then
+            # you can't modify a chunk without it already being loaded
         self.__goto_current_chunk()
         try:
             data = self.__fernet.decrypt(self.__file.read(self.__chunksize))
@@ -72,7 +72,7 @@ class FernetFile:
     
     def __write_chunk(self) -> None:
         if not self.writeable:
-            return # Raising an exception is write's job
+            return # Raising an exception is the write method's responsibility
         self.__goto_current_chunk()
         data = self.__chunk.getvalue()
         padding = self.__data_chunksize - len(data)
@@ -90,6 +90,7 @@ class FernetFile:
         if self.closed:
             raise ValueError("I/O operation on closed file")
 
+        # argument parsing
         if len(args) >= 2:
             offset, whence = args[:2]
         else:
@@ -129,10 +130,9 @@ class FernetFile:
         if size <= self.__data_chunksize-self._pos_pointer: # if all wanted data is in current chunk
             self.__chunk.seek(self._pos_pointer)
             data = self.__chunk.read(size)
-            self._pos_pointer += size # we do this after reading otherwise it could mess up our chunk pointer
-        else:
-            # else: read until start of next chunk.
-            # read the stuff in the current chunk
+            self._pos_pointer += size
+        else: # else: read until start of next chunk
+            # read in the current chunk
             data = bytearray()
             read_size = self.__data_chunksize-self._pos_pointer
             self.__chunk.seek(self._pos_pointer)
@@ -140,12 +140,12 @@ class FernetFile:
             self._pos_pointer = 0
             self._chunk_pointer += 1
             size -= read_size
-            # loop over the rest
+            # loop, reading all the data in each chunk
             while size >= self.__data_chunksize:
                 data += self.__read_chunk().getvalue()
                 size -= self.__data_chunksize
                 self._chunk_pointer += 1
-            # mop up the last chunk
+            # partially read the last chunk
             if size:
                 data += self.__read_chunk().read(size)
                 self._pos_pointer = size
@@ -180,7 +180,7 @@ class FernetFile:
             self.__chunk_modified = True
             return size
         # else: write until start of next chunk. else omitted for indent readability
-        # write the stuff in the current chunk
+        # write in the current chunk
         b = BytesIO(b)
         write_size = self.__data_chunksize-self._pos_pointer
         if self.__chunk is not None:
@@ -191,13 +191,13 @@ class FernetFile:
         self._pos_pointer = 0
         self.__chunk_modified = True
         size -= write_size
-        # loop over the rest
+        # loop, writing full chunks
         while size >= self.__data_chunksize:
             self._chunk_pointer += 1
             self.__chunk = BytesIO(b.read(self.__data_chunksize))
             self.__chunk_modified = True
             size -= self.__data_chunksize
-        # mop up the last chunk
+        # partially write the last chunk
         if size:
             self._chunk_pointer += 1
             self.__chunk = self.__read_chunk()
@@ -208,9 +208,12 @@ class FernetFile:
         return return_value
     
     def close(self) -> BytesIO | None:
+        # write data stored in memory
         try: self.__write_chunk()
         except: pass
+        # mark as closed
         self.closed = True
+        # if file is BytesIO, return it, otherwise close the file
         if isinstance(self.__file, BytesIO):
             return self.__file
         else:
@@ -235,6 +238,7 @@ class FernetFile:
     @_pos_pointer.setter
     def _pos_pointer(self, value: int) -> None:
         self.__pos_pointer = value
+        # wrapping value of pos pointer by changing chunk pointer
         if self.__pos_pointer >= self.__data_chunksize:
             chunk_difference = self.__pos_pointer//self.__data_chunksize
             self.__pos_pointer -= chunk_difference*self.__data_chunksize
@@ -252,6 +256,7 @@ class FernetFile:
     
     @_chunk_pointer.setter
     def _chunk_pointer(self, value: int) -> None:
+        # write a chunk only if it's been modified
         if self.__chunk_modified: self.__write_chunk()
         self.__chunk_pointer = value
         self.__read_chunk()
