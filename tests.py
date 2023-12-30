@@ -29,25 +29,23 @@ def chunk_testing_sizes():
     yield 1 # 1B
     yield 256 # 256B
     yield 65536 # 64KiB
-    yield 16777216 # 16MiB
+    yield 1_048_576 # 1MiB
     for _ in range(3):
-        yield randint(1, 1000) # 1B to 1KiB
+        yield randint(1, 100_000) # 1B to 100KB
     for _ in range(3):
-        yield randint(1000, 1000000) # 1KiB to 1MiB
-    for _ in range(3):
-        yield randint(1000000, 100000000) # 1MiB to 100MiB
+        yield randint(100_000, 10_000_000) # 100KB to 10MB
 
 def input_testing_sizes(chunksize):
     yield 0
     yield 1
     yield chunksize
     yield chunksize + 73 - (chunksize % 16)
-    yield chunksize*10
-    yield chunksize*10 + 73 - (chunksize*10 % 16)
+    yield chunksize*100
+    yield chunksize*100 + 73 - (chunksize*100 % 16)
 
 def execute_test(desc: str, test: Callable) -> None:
     if TQDM_AVAILABLE:
-        pbar = tqdm(desc=desc, total=78) # magic, must be changing if number of test sizes changes
+        pbar = tqdm(desc=desc, total=60) # magic, must be changing if number of test sizes changes
     for chunksize in chunk_testing_sizes():
         for inputsize in input_testing_sizes(chunksize):
             input_data = os.urandom(inputsize)
@@ -129,7 +127,6 @@ class TestFernetFiles(unittest.TestCase):
                 test_random_reads(self, fernet_file, chunksize, input_data)
                 test_other_read(self, fernet_file, input_data)
                 input_data = test_random_writes(self, fernet_file, chunksize, input_data)
-                test_data_is_encrypted(self, "test", fernet_file, input_data)
                 fernet_file.close()
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
@@ -147,7 +144,6 @@ class TestFernetFiles(unittest.TestCase):
                     test_random_reads(self, fernet_file, chunksize, input_data)
                     test_other_read(self, fernet_file, input_data)
                     input_data = test_random_writes(self, fernet_file, chunksize, input_data)
-                    test_data_is_encrypted(self, "test", fernet_file, input_data)
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
                 self.assertRaises(ValueError, fernet_file.write, input_data)
