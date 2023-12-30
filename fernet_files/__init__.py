@@ -211,8 +211,11 @@ class FernetFile:
         try: self.__write_chunk()
         except: pass
         self.closed = True
-        try: self.file.close()
-        except: pass
+        if isinstance(self.__file, BytesIO):
+            return self.__file
+        else:
+            try: self.__file.close()
+            except: pass
 
     generate_key = FernetNoBase64.generate_key
 
