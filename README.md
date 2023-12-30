@@ -99,17 +99,17 @@ Static method. Acts as a pointer to `custom_fernet.FernetNoBase64.generate_key()
 
 #### int `fernet_files.META_SIZE`
 
-DON'T TOUCH UNLESS ABSOLUTELY NECESSARY. Defaults to 8.
+DON'T TOUCH UNLESS ABSOLUTELY NECESSARY. Defaults to 8. META_SIZE represented as $M$ in formulae.
 
-The size of a file's metadata in bytes is $2\times\text{META\_SIZE}$.
+The size of a file's metadata in bytes is $2M$.
 
-The first number is a little-endian unsigned $(\text{META\_SIZE}\times 8)$-bit integer, representing how many chunks are in the file.
+The first number is a little-endian unsigned $(8M)$-bit integer, representing how many chunks are in the file.
 
-The second number is a little-endian unsigned $(\text{META\_SIZE}\times 8)$-bit integer, representing the size of the last chunk's padding.
+The second number is a little-endian unsigned $(8M)$-bit integer, representing the size of the last chunk's padding.
 
 This simultaneously limits both chunksize and the number of chunks a file can have:
-- A chunk can have a max size of $2^{\text{META\_SIZE}\times 8}-1$ bytes (default 18,446,744,073,709,551,615)
-- A file can have a max $2^{\text{META\_SIZE}\times 8}-1$ chunks (default 18,446,744,073,709,551,615)
+- A chunk can have a max size of $2^{8M}-1$ bytes (default 18,446,744,073,709,551,615)
+- A file can have a max $2^{8M}-1$ chunks (default 18,446,744,073,709,551,615)
 
 You have the power to change this value in order to bypass these limitations for future-proofing, HOWEVER, the value you use must be consistent across reading and writing the same file.
 Therefore, I recommend you don't change it unless you absolutely have to, for compatibility reasons.
