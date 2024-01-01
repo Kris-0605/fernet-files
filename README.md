@@ -4,6 +4,15 @@ Fernet encryption requires all data to be encrypted or decrypted at once. This i
 
 You may treat the class similar to a file: it has `read`, `write`, `seek` and `close` methods. It can also be context managed, so you can close it using a `with` statement.
 
+## Contents
+
+- Example usage
+- Requirements
+- Installation
+- Benchmarks
+- Documentation for module users
+- Documentation for module developers
+
 ## Example usage
 
 ```py
@@ -111,8 +120,8 @@ Pending upload to pip
 #### Observations
 
 - Fernet uses approximately 10KB $+$ datasize $\times$ 6.67
-- FernetNoBase64 uses approximately 10KB $+$ datasize $\times$ 5
-- As a result, FernetFiles uses approximately 10KB $+$ chunksize $\times$ 5, though this can vary slightly due to overhead from padding.
+- FernetNoBase64 uses approximately 10KB $+$ datasize $\times$ 4
+- As a result, FernetFiles uses approximately 10KB $+$ chunksize $\times$ 5, though this can vary slightly due to overhead from padding. (the additional x1 is the memory used to store the chunk)
 - FernetFiles offers a trade off: much less memory usage, in exchange for increased processing time. If your objective is to encrypt an extremely large file as quickly as possible, then set the chunk size equal to your available memory divided by 6.
 - Memory usage during decryption has not been included in a table because it is very similar to the table. Not this does not mean that the memory usage is similar, but that the trends seen in the data are similar.
 
@@ -276,8 +285,6 @@ Calls `self.close` and returns `None`.
 #### method `fernet_files.FernetFile.__del__(self)`
 
 Calls `self.close` and returns `None`.
-
-### Misc
 
 #### custom_fernet.FernetNoBase64 `fernet_files.FernetFile.__fernet`
 
