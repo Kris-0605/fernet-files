@@ -10,7 +10,7 @@ You may treat the class similar to a file: it has `read`, `write`, `seek` and `c
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Benchmarks](#benchmarks)
-- [Documentation for module users](#documentation-for-module-usage)
+- [Documentation for module users](#documentation-for-module-users)
 - [Documentation for module developers](#documentation-for-module-developers)
 
 ## Example usage
