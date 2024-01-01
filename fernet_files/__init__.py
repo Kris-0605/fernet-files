@@ -6,7 +6,7 @@ from io import BytesIO, RawIOBase, BufferedIOBase, StringIO, TextIOBase, Unsuppo
 # Don't modify without reading documentation
 META_SIZE = 8
 
-DEFAULT_CHUNKSIZE = 4096
+DEFAULT_CHUNKSIZE = 65536
 
 class FernetFile:
     def __init__(self, key: bytes | FernetNoBase64, file: str | RawIOBase | BufferedIOBase, chunksize: int = DEFAULT_CHUNKSIZE) -> None:

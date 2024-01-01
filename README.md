@@ -118,7 +118,7 @@ Pending upload to pip
 
 ## Documentation for module usage
 
-### class `fernet_files.FernetFile(self, key, file, chunksize=4096)`
+### class `fernet_files.FernetFile(self, key, file, chunksize=65536)`
 
 Parameters:
 
@@ -129,7 +129,7 @@ Parameters:
 - **chunksize** - The size of chunks in bytes. 
 - - Bigger chunks use more memory and take longer to read or write, but smaller chunks can be very slow when trying to read/write in large quantities.
 - - Bigger chunks apply padding so a very large chunksize will create a large file. Every chunk has its own metadata so a very small chunk size will create a large file.
-- - Defaults to 4KiB (4096 bytes).
+- - Defaults to 64KiB (65536 bytes).
 
 #### method `fernet_files.FernetFile.read(self, size=-1)`
 
