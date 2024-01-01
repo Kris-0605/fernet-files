@@ -1,5 +1,6 @@
 from fernet_files.custom_fernet import FernetNoBase64
 import os
+import os.path
 from io import BytesIO, RawIOBase, BufferedIOBase, StringIO, TextIOBase, UnsupportedOperation
 
 # Don't modify without reading documentation
@@ -18,7 +19,10 @@ class FernetFile:
         elif isinstance(file, (RawIOBase, BufferedIOBase, BytesIO)):
             self.__file = file
         elif isinstance(file, str):
-            self.__file = open(file, "wb+")
+            if os.path.exists(file):
+                self.__file = open(file, "rb+")
+            else:
+                self.__file = open(file, "wb+")
         else:
             raise TypeError("File must be binary file or a filename")
         
