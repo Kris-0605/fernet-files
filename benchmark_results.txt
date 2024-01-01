@@ -1,0 +1,408 @@
+Fernet 1 bytes:
+0.12670259992592037 seconds to encrypt
+0.20245059998705983 seconds to read first byte
+10957 bytes peak memory to encrypt
+10860 bytes peak memory to decrypt
+Output filesize 100 bytes
+FernetNoBase64 1 bytes:
+0.0017717001028358936 seconds to encrypt
+0.0159557000733912 seconds to read first byte
+10813 bytes peak memory to encrypt
+10567 bytes peak memory to decrypt
+Output filesize 73 bytes
+FernetFile chunksize 16 bytes, datasize 1 bytes:
+0.0017206999473273754 seconds to encrypt
+0.018139899941161275 seconds to read first byte
+11435 bytes peak memory to encrypt
+11469 bytes peak memory to decrypt
+Output filesize 105 bytes
+FernetFile chunksize 256 bytes, datasize 1 bytes:
+0.002305899979546666 seconds to encrypt
+0.03496930003166199 seconds to read first byte
+12021 bytes peak memory to encrypt
+12128 bytes peak memory to decrypt
+Output filesize 345 bytes
+FernetFile chunksize 4096 bytes, datasize 1 bytes:
+0.003199599916115403 seconds to encrypt
+0.3092640000395477 seconds to read first byte
+30949 bytes peak memory to encrypt
+31188 bytes peak memory to decrypt
+Output filesize 4185 bytes
+FernetFile chunksize 65536 bytes, datasize 1 bytes:
+0.0038477000780403614 seconds to encrypt
+0.035951799945905805 seconds to read first byte
+338037 bytes peak memory to encrypt
+338129 bytes peak memory to decrypt
+Output filesize 65625 bytes
+FernetFile chunksize 1048576 bytes, datasize 1 bytes:
+0.01602769992314279 seconds to encrypt
+0.09474089997820556 seconds to read first byte
+5253100 bytes peak memory to encrypt
+5253396 bytes peak memory to decrypt
+Output filesize 1048665 bytes
+FernetFile chunksize 16777216 bytes, datasize 1 bytes:
+0.16052749985828996 seconds to encrypt
+0.5480877000372857 seconds to read first byte
+83896269 bytes peak memory to encrypt
+83896532 bytes peak memory to decrypt
+Output filesize 16777305 bytes
+Fernet 16 bytes:
+0.00070349988527596 seconds to encrypt
+0.16091360012069345 seconds to read first byte
+9925 bytes peak memory to encrypt
+10120 bytes peak memory to decrypt
+Output filesize 120 bytes
+FernetNoBase64 16 bytes:
+0.0019894998986274004 seconds to encrypt
+0.02757079992443323 seconds to read first byte
+9925 bytes peak memory to encrypt
+9967 bytes peak memory to decrypt
+Output filesize 89 bytes
+FernetFile chunksize 16 bytes, datasize 16 bytes:
+0.002174499910324812 seconds to encrypt
+0.033010799903422594 seconds to read first byte
+10392 bytes peak memory to encrypt
+10527 bytes peak memory to decrypt
+Output filesize 105 bytes
+FernetFile chunksize 256 bytes, datasize 16 bytes:
+0.0021875000093132257 seconds to encrypt
+0.2510247998870909 seconds to read first byte
+11427 bytes peak memory to encrypt
+11607 bytes peak memory to decrypt
+Output filesize 345 bytes
+FernetFile chunksize 4096 bytes, datasize 16 bytes:
+0.002823099959641695 seconds to encrypt
+0.022355200024321675 seconds to read first byte
+30659 bytes peak memory to encrypt
+30867 bytes peak memory to decrypt
+Output filesize 4185 bytes
+FernetFile chunksize 65536 bytes, datasize 16 bytes:
+0.0041403998620808125 seconds to encrypt
+0.03813309990800917 seconds to read first byte
+337859 bytes peak memory to encrypt
+338067 bytes peak memory to decrypt
+Output filesize 65625 bytes
+FernetFile chunksize 1048576 bytes, datasize 16 bytes:
+0.022084999829530716 seconds to encrypt
+0.25483360001817346 seconds to read first byte
+5253059 bytes peak memory to encrypt
+5253267 bytes peak memory to decrypt
+Output filesize 1048665 bytes
+FernetFile chunksize 16777216 bytes, datasize 16 bytes:
+0.1570990001782775 seconds to encrypt
+0.6077982999850065 seconds to read first byte
+83896259 bytes peak memory to encrypt
+83896467 bytes peak memory to decrypt
+Output filesize 16777305 bytes
+Fernet 256 bytes:
+0.000801699934527278 seconds to encrypt
+0.17652249988168478 seconds to read first byte
+11357 bytes peak memory to encrypt
+11394 bytes peak memory to decrypt
+Output filesize 440 bytes
+FernetNoBase64 256 bytes:
+0.0017566001042723656 seconds to encrypt
+0.026193399913609028 seconds to read first byte
+10590 bytes peak memory to encrypt
+10921 bytes peak memory to decrypt
+Output filesize 329 bytes
+FernetFile chunksize 16 bytes, datasize 256 bytes:
+0.008686200017109513 seconds to encrypt
+0.0268586000893265 seconds to read first byte
+12089 bytes peak memory to encrypt
+10621 bytes peak memory to decrypt
+Output filesize 1440 bytes
+FernetFile chunksize 256 bytes, datasize 256 bytes:
+0.002174600027501583 seconds to encrypt
+0.30583079997450113 seconds to read first byte
+11378 bytes peak memory to encrypt
+11701 bytes peak memory to decrypt
+Output filesize 345 bytes
+FernetFile chunksize 4096 bytes, datasize 256 bytes:
+0.002786800032481551 seconds to encrypt
+0.030482899863272905 seconds to read first byte
+30854 bytes peak memory to encrypt
+31111 bytes peak memory to decrypt
+Output filesize 4185 bytes
+FernetFile chunksize 65536 bytes, datasize 256 bytes:
+0.004122199956327677 seconds to encrypt
+0.02520220004953444 seconds to read first byte
+338050 bytes peak memory to encrypt
+338405 bytes peak memory to decrypt
+Output filesize 65625 bytes
+FernetFile chunksize 1048576 bytes, datasize 256 bytes:
+0.014837200054898858 seconds to encrypt
+0.2389714999590069 seconds to read first byte
+5253250 bytes peak memory to encrypt
+5253605 bytes peak memory to decrypt
+Output filesize 1048665 bytes
+FernetFile chunksize 16777216 bytes, datasize 256 bytes:
+0.1580727999098599 seconds to encrypt
+0.5644106999970973 seconds to read first byte
+83896450 bytes peak memory to encrypt
+83896805 bytes peak memory to decrypt
+Output filesize 16777305 bytes
+Fernet 4096 bytes:
+0.0021639999467879534 seconds to encrypt
+0.12398159992881119 seconds to read first byte
+36957 bytes peak memory to encrypt
+35714 bytes peak memory to decrypt
+Output filesize 5560 bytes
+FernetNoBase64 4096 bytes:
+0.0018903000745922327 seconds to encrypt
+0.03216229984536767 seconds to read first byte
+25999 bytes peak memory to encrypt
+30121 bytes peak memory to decrypt
+Output filesize 4169 bytes
+FernetFile chunksize 16 bytes, datasize 4096 bytes:
+0.04606259986758232 seconds to encrypt
+0.07097600004635751 seconds to read first byte
+11202 bytes peak memory to encrypt
+10482 bytes peak memory to decrypt
+Output filesize 22800 bytes
+FernetFile chunksize 256 bytes, datasize 4096 bytes:
+0.007972499821335077 seconds to encrypt
+0.039412799989804626 seconds to read first byte
+13040 bytes peak memory to encrypt
+11705 bytes peak memory to decrypt
+Output filesize 5280 bytes
+FernetFile chunksize 4096 bytes, datasize 4096 bytes:
+0.0029181998688727617 seconds to encrypt
+0.05417189979925752 seconds to read first byte
+30578 bytes peak memory to encrypt
+34790 bytes peak memory to decrypt
+Output filesize 4185 bytes
+FernetFile chunksize 65536 bytes, datasize 4096 bytes:
+0.004321499960497022 seconds to encrypt
+0.11366229993291199 seconds to read first byte
+341971 bytes peak memory to encrypt
+342098 bytes peak memory to decrypt
+Output filesize 65625 bytes
+FernetFile chunksize 1048576 bytes, datasize 4096 bytes:
+0.015238200081512332 seconds to encrypt
+0.09150950005277991 seconds to read first byte
+5257171 bytes peak memory to encrypt
+5257347 bytes peak memory to decrypt
+Output filesize 1048665 bytes
+FernetFile chunksize 16777216 bytes, datasize 4096 bytes:
+0.15681750001385808 seconds to encrypt
+0.5161222000606358 seconds to read first byte
+83900371 bytes peak memory to encrypt
+83900547 bytes peak memory to decrypt
+Output filesize 16777305 bytes
+Fernet 65536 bytes:
+0.0027940000873059034 seconds to encrypt
+0.05021249991841614 seconds to read first byte
+446557 bytes peak memory to encrypt
+424834 bytes peak memory to decrypt
+Output filesize 87480 bytes
+FernetNoBase64 65536 bytes:
+0.0025933999568223953 seconds to encrypt
+0.03639729996211827 seconds to read first byte
+271759 bytes peak memory to encrypt
+337321 bytes peak memory to decrypt
+Output filesize 65609 bytes
+FernetFile chunksize 16 bytes, datasize 65536 bytes:
+0.3679239999037236 seconds to encrypt
+0.03197930008172989 seconds to read first byte
+11507 bytes peak memory to encrypt
+10469 bytes peak memory to decrypt
+Output filesize 364560 bytes
+FernetFile chunksize 256 bytes, datasize 65536 bytes:
+0.03217300004325807 seconds to encrypt
+0.29560099984519184 seconds to read first byte
+12123 bytes peak memory to encrypt
+11705 bytes peak memory to decrypt
+Output filesize 84240 bytes
+FernetFile chunksize 4096 bytes, datasize 65536 bytes:
+0.009228899842128158 seconds to encrypt
+0.0626244000159204 seconds to read first byte
+31220 bytes peak memory to encrypt
+34794 bytes peak memory to decrypt
+Output filesize 66720 bytes
+FernetFile chunksize 65536 bytes, datasize 65536 bytes:
+0.004415199859067798 seconds to encrypt
+0.050843500066548586 seconds to read first byte
+337778 bytes peak memory to encrypt
+403434 bytes peak memory to decrypt
+Output filesize 65625 bytes
+FernetFile chunksize 1048576 bytes, datasize 65536 bytes:
+0.017458300106227398 seconds to encrypt
+0.06737389997579157 seconds to read first byte
+5318611 bytes peak memory to encrypt
+5318791 bytes peak memory to decrypt
+Output filesize 1048665 bytes
+FernetFile chunksize 16777216 bytes, datasize 65536 bytes:
+0.16489010001532733 seconds to encrypt
+0.4190064000431448 seconds to read first byte
+83961766 bytes peak memory to encrypt
+83961991 bytes peak memory to decrypt
+Output filesize 16777305 bytes
+Fernet 1048576 bytes:
+0.015831199940294027 seconds to encrypt
+0.06833859998732805 seconds to read first byte
+7000157 bytes peak memory to encrypt
+6650754 bytes peak memory to decrypt
+Output filesize 1398200 bytes
+FernetNoBase64 1048576 bytes:
+0.008010599995031953 seconds to encrypt
+0.045475600054487586 seconds to read first byte
+4203919 bytes peak memory to encrypt
+5252521 bytes peak memory to decrypt
+Output filesize 1048649 bytes
+FernetFile chunksize 16 bytes, datasize 1048576 bytes:
+5.527572700055316 seconds to encrypt
+0.22791990009136498 seconds to read first byte
+11601 bytes peak memory to encrypt
+10604 bytes peak memory to decrypt
+Output filesize 5832720 bytes
+FernetFile chunksize 256 bytes, datasize 1048576 bytes:
+0.3379339000675827 seconds to encrypt
+0.16223799996078014 seconds to read first byte
+12313 bytes peak memory to encrypt
+11733 bytes peak memory to decrypt
+Output filesize 1347600 bytes
+FernetFile chunksize 4096 bytes, datasize 1048576 bytes:
+0.03417500015348196 seconds to encrypt
+0.04907410009764135 seconds to read first byte
+31449 bytes peak memory to encrypt
+34745 bytes peak memory to decrypt
+Output filesize 1067280 bytes
+FernetFile chunksize 65536 bytes, datasize 1048576 bytes:
+0.017178399953991175 seconds to encrypt
+0.02464530011638999 seconds to read first byte
+338555 bytes peak memory to encrypt
+403381 bytes peak memory to decrypt
+Output filesize 1049760 bytes
+FernetFile chunksize 1048576 bytes, datasize 1048576 bytes:
+0.013469700003042817 seconds to encrypt
+0.06936140009202063 seconds to read first byte
+5252978 bytes peak memory to encrypt
+6301535 bytes peak memory to decrypt
+Output filesize 1048665 bytes
+FernetFile chunksize 16777216 bytes, datasize 1048576 bytes:
+0.181841199984774 seconds to encrypt
+0.4266379999462515 seconds to read first byte
+84944851 bytes peak memory to encrypt
+84944937 bytes peak memory to decrypt
+Output filesize 16777305 bytes
+Fernet 16777216 bytes:
+0.24006260000169277 seconds to encrypt
+0.2674099998548627 seconds to read first byte
+111857712 bytes peak memory to encrypt
+106265474 bytes peak memory to decrypt
+Output filesize 22369720 bytes
+FernetNoBase64 16777216 bytes:
+0.12672309996560216 seconds to encrypt
+0.17745440010912716 seconds to read first byte
+67118434 bytes peak memory to encrypt
+83895721 bytes peak memory to decrypt
+Output filesize 16777289 bytes
+FernetFile chunksize 16 bytes, datasize 16777216 bytes:
+259.9749004000332 seconds to encrypt
+0.1794207999482751 seconds to read first byte
+11225 bytes peak memory to encrypt
+10608 bytes peak memory to decrypt
+Output filesize 93323280 bytes
+FernetFile chunksize 256 bytes, datasize 16777216 bytes:
+21.21480629988946 seconds to encrypt
+0.20430610002949834 seconds to read first byte
+12264 bytes peak memory to encrypt
+11643 bytes peak memory to decrypt
+Output filesize 21561360 bytes
+FernetFile chunksize 4096 bytes, datasize 16777216 bytes:
+1.6684215001296252 seconds to encrypt
+0.16993690002709627 seconds to read first byte
+31500 bytes peak memory to encrypt
+34773 bytes peak memory to decrypt
+Output filesize 17076240 bytes
+FernetFile chunksize 65536 bytes, datasize 16777216 bytes:
+0.21433279989287257 seconds to encrypt
+0.2025848999619484 seconds to read first byte
+338551 bytes peak memory to encrypt
+403430 bytes peak memory to decrypt
+Output filesize 16795920 bytes
+FernetFile chunksize 1048576 bytes, datasize 16777216 bytes:
+0.17357230000197887 seconds to encrypt
+0.3123945000115782 seconds to read first byte
+5253755 bytes peak memory to encrypt
+6301625 bytes peak memory to decrypt
+Output filesize 16778400 bytes
+FernetFile chunksize 16777216 bytes, datasize 16777216 bytes:
+0.15937729994766414 seconds to encrypt
+0.4685733998194337 seconds to read first byte
+83896084 bytes peak memory to encrypt
+100673465 bytes peak memory to decrypt
+Output filesize 16777305 bytes
+Fernet 268435456 bytes:
+5.792192399967462 seconds to encrypt
+3.573898300062865 seconds to read first byte
+1789579312 bytes peak memory to encrypt
+1700100994 bytes peak memory to decrypt
+Output filesize 357914040 bytes
+FernetNoBase64 268435456 bytes:
+3.5581247000955045 seconds to encrypt
+2.0105975999031216 seconds to read first byte
+1073751439 bytes peak memory to encrypt
+1342186921 bytes peak memory to decrypt
+Output filesize 268435529 bytes
+FernetFile chunksize 4096 bytes, datasize 268435456 bytes:
+26.645723399939016 seconds to encrypt
+0.05438089999370277 seconds to read first byte
+31594 bytes peak memory to encrypt
+34818 bytes peak memory to decrypt
+Output filesize 273219600 bytes
+FernetFile chunksize 65536 bytes, datasize 268435456 bytes:
+3.019651700044051 seconds to encrypt
+0.2870161000173539 seconds to read first byte
+338651 bytes peak memory to encrypt
+403458 bytes peak memory to decrypt
+Output filesize 268734480 bytes
+FernetFile chunksize 1048576 bytes, datasize 268435456 bytes:
+2.5912786999251693 seconds to encrypt
+0.09065090003423393 seconds to read first byte
+5253751 bytes peak memory to encrypt
+6301670 bytes peak memory to decrypt
+Output filesize 268454160 bytes
+FernetFile chunksize 16777216 bytes, datasize 268435456 bytes:
+2.398154200054705 seconds to encrypt
+0.4105283999815583 seconds to read first byte
+83896865 bytes peak memory to encrypt
+100673510 bytes peak memory to decrypt
+Output filesize 268436640 bytes
+Fernet 4294967296 bytes:
+105.57770320004784 seconds to encrypt
+54.13716199994087 seconds to read first byte
+28633124912 bytes peak memory to encrypt
+27201469318 bytes peak memory to decrypt
+Output filesize 5726623160 bytes
+FernetNoBase64 4294967296 bytes:
+73.51927009993233 seconds to encrypt
+30.67782020010054 seconds to read first byte
+17179878803 bytes peak memory to encrypt
+21474846125 bytes peak memory to decrypt
+Output filesize 4294967369 bytes
+FernetFile chunksize 4096 bytes, datasize 4294967296 bytes:
+400.3474882999435 seconds to encrypt
+0.08461920008994639 seconds to read first byte
+31169 bytes peak memory to encrypt
+34818 bytes peak memory to decrypt
+Output filesize 4371513360 bytes
+FernetFile chunksize 65536 bytes, datasize 4294967296 bytes:
+49.44468600000255 seconds to encrypt
+0.04353849985636771 seconds to read first byte
+338790 bytes peak memory to encrypt
+403409 bytes peak memory to decrypt
+Output filesize 4299751440 bytes
+FernetFile chunksize 1048576 bytes, datasize 4294967296 bytes:
+39.64099150011316 seconds to encrypt
+0.058060500072315335 seconds to read first byte
+5253953 bytes peak memory to encrypt
+6301563 bytes peak memory to decrypt
+Output filesize 4295266320 bytes
+FernetFile chunksize 16777216 bytes, datasize 4294967296 bytes:
+37.33289789990522 seconds to encrypt
+0.3768406000453979 seconds to read first byte
+83896820 bytes peak memory to encrypt
+100673465 bytes peak memory to decrypt
+Output filesize 4294986000 bytes
