@@ -76,5 +76,8 @@ for datasize in (2**a for a in range(0, 36, 4)):
     data = urandom(datasize)
     fernet = Fernet(Fernet.generate_key())
     test_fernet()
-    for chunksize in (2**b for b in range(0, 36, 4)):
-        test_ff()
+    fernet = FernetNoBase64(FernetNoBase64.generate_key())
+    test_fernet()
+    for chunksize in (2**b for b in range(4, 28, 4)):
+        if not ((chunksize == 2**4 or chunksize == 2**8) and (datasize == 2**28 or datasize == 2**32)):
+            test_ff()
