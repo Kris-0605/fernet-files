@@ -217,12 +217,16 @@ class FernetFile:
         except: pass
         # mark as closed
         self.closed = True
-        # if file is BytesIO, return it, otherwise close the file
-        if isinstance(self.__file, BytesIO):
-            return self.__file
-        else:
-            try: self.__file.close()
-            except: pass
+        try:
+            # if file is BytesIO, return it, otherwise close the file
+            if isinstance(self.__file, BytesIO):
+                return self.__file
+            else:
+                try: self.__file.close()
+                except: pass
+        except AttributeError:
+            # fixes https://github.com/Kris-0605/fernet_files/issues/4
+            pass
 
     generate_key = FernetNoBase64.generate_key
 
