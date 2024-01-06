@@ -42,7 +42,9 @@ custom_fernet.py is based on cryptography 41.0.4. If the file it's based on is u
 
 ## Installation
 
-Pending upload to pip
+```
+pip install fernet_files
+```
 
 ## Benchmarks
 ### Info

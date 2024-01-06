@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fernet_files"
+version = "0.1.0"
+description = "Encryption/decryption of files with cryptography.fernet, but with file-like methods"
+authors = [
+    {name = "Christopher Ashford", email = "christopherash0605@gmail.com"},
+]
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["fernet", "fernetfile", "fernet_file", "fernetfiles"] # What do I put here?
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: File Formats",
+]
+urls = {repository = "https://github.com/Kris-0605/fernet-files"}
+dependencies = ["cryptography<=41.04"]
+
+[tool.setuptools]
+license-files = ["LICENSE"]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
