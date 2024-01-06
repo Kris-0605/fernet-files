@@ -3,3 +3,4 @@ __pycache__/*
 test
 */fernet_files.egg-info/*
 build/*
+dist/*
