@@ -2,3 +2,4 @@ __pycache__/*
 */__pycache__/*
 test
 */fernet_files.egg-info/*
+build/*
