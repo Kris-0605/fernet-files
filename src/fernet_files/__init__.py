@@ -1,3 +1,12 @@
+'''encryption/decryption of files with cryptography.fernet, but with file-like methods
+
+Fernet encryption requires all data to be encrypted or decrypted at once.
+This is memory intensive, and it is slow if you only want to read part of a file.
+Fernet Files provides a simple interface that breaks data up into chunks when encrypting and decrypting them to lower memory usage.
+Data is only encrypted when it's necessary to do so.
+You may treat the class similar to a file: it has `read`, `write`, `seek` and `close` methods.
+It can also be context managed, so you can close it using a `with` statement.'''
+
 from fernet_files.custom_fernet import FernetNoBase64
 import os
 import os.path
@@ -5,10 +14,24 @@ from io import BytesIO, RawIOBase, BufferedIOBase, StringIO, TextIOBase, Unsuppo
 
 # Don't modify without reading documentation
 META_SIZE = 8
+'''The size of a file's metadata is META_SIZE*2.
+See documentation for more information.'''
 
 DEFAULT_CHUNKSIZE = 65536
+'''The default size of chunks in bytes.'''
 
 class FernetFile:
+    '''Parameters:
+
+- key - A key (recommended) or a `fernet_files.custom_fernet.FernetNoBase64` object
+- - A key must be 32 random bytes. Get using `fernet_files.FernetFile.generate_key()` and store somewhere secure
+- - Alternatively, pass in a `fernet_files.custom_fernet.FernetNoBase64` object
+- file - Accepts a filename as a string, or a file-like object. If passing in a file-like object, it would be opened in binary mode.
+- chunksize - The size of chunks in bytes. 
+- - Bigger chunks use more memory and take longer to read or write, but smaller chunks can be very slow when trying to read/write in large quantities.
+- - Bigger chunks apply padding so a very large chunksize will create a large file. Every chunk has its own metadata so a very small chunk size will create a large file.
+- - Defaults to 64KiB (65536 bytes).'''
+
     def __init__(self, key: bytes | FernetNoBase64, file: str | RawIOBase | BufferedIOBase, chunksize: int = DEFAULT_CHUNKSIZE) -> None:
         self.closed = False
 
@@ -55,12 +78,15 @@ class FernetFile:
         self._chunk_pointer = 0 # what chunk you're currently in
 
     def __goto_current_chunk(self) -> None:
+        '''Moves our position in `self.__file` to the location represented by the chunk pointer, taking into account the metadata at the start of the file.\nCalculated as follows: take the number of the chunk you're currently on, multiply by the size of chunks when they're written to disk. Take the META_SIZE, multiply that by 2 and add it to the number you had before.'''
         self.__file.seek(self._chunk_pointer*self.__chunksize+META_SIZE*2)
 
     def __get_file_size(self) -> int:
+        '''Calculate the size of the data contained within the file in bytes using the file's metadata. This is the size of the data, not the size of what is written to disk.\nCalculated as follows: take the number of the last chunk and add 1 to get the total number of chunks (because counting starts at 0). Multiply this by the chunksize. Finally, subtract the size of the padding used on the last chunk.'''
         return (self.__last_chunk+1)*self.__data_chunksize-self.__last_chunk_padding
     
     def __read_chunk(self) -> BytesIO:
+        '''Reads and decrypts the current chunk, turns it into a BytesIO object, stores that object in `self.__chunk` and returns it.\nIf the chunk has been modified, it is already loaded into memory so no file operations are done. Also responsible for removing padding if the chunk being read is the last chunk.'''
         if self.__chunk_modified:
             return self.__chunk
             # you can't modify a chunk without it already being loaded
@@ -75,6 +101,7 @@ class FernetFile:
         return self.__chunk
     
     def __write_chunk(self) -> None:
+        '''Encrypts and writes the chunk, and sets `self.__chunk_modified` to False.\nAlso responsible for applying padding and modifying the metadata at the start of the file if this is the last chunk.'''
         if not self.writeable:
             return # Raising an exception is the write method's responsibility
         self.__goto_current_chunk()
@@ -91,6 +118,19 @@ class FernetFile:
         self.__chunk_modified = False
 
     def seek(self, *args, whence: int = os.SEEK_SET) -> int:
+        '''Can be called as:
+- seek(self, offset, whence)
+- seek(self, offset, whence=whence)
+
+Moves through the file by the specified number of bytes. "whence" determines what this is relative to. Returns your new absolute position as an integer.
+
+Parameters:
+
+- offset - Integer. Move this number of bytes relative to whence.
+- whence - Ignored if using a BytesIO object. Accepted values are:
+- - `os.SEEK_SET` or `0` - relative to the start of the stream
+- - `os.SEEK_CUR` or `1` - relative to the current stream position
+- - `os.SEEK_END` or `2` - relative to the end of the stream (use negative offset)'''
         if self.closed:
             raise ValueError("I/O operation on closed file")
 
@@ -121,6 +161,11 @@ class FernetFile:
         return self._pos_pointer + self._chunk_pointer*self.__data_chunksize
 
     def read(self, size: int = -1) -> bytes:
+        '''Reads the number of bytes specified and returns them.
+
+Parameters:
+
+- size - Positive integer. If -1 or not specified then read to the end of the file.'''
         if self.closed:
             raise ValueError("I/O operation on closed file")
         # data validation
@@ -164,6 +209,11 @@ class FernetFile:
         return bytes(data)
 
     def write(self, b: bytes) -> int:
+        '''Writes the given bytes. Returns the number of bytes written.
+
+Parameters:
+
+- b - The bytes to be written.'''
         if not self.writeable:
             raise UnsupportedOperation("write")
         if self.closed:
@@ -212,6 +262,7 @@ class FernetFile:
         return return_value
     
     def close(self) -> BytesIO | None:
+        '''Writes all outstanding data closes the file.\nReturns `None` unless the file is a `BytesIO` object, in which case it returns the object without closing it.'''
         # write data stored in memory
         try: self.__write_chunk()
         except: pass
@@ -229,18 +280,23 @@ class FernetFile:
             pass
 
     generate_key = FernetNoBase64.generate_key
+    '''Static method used to generate a key. Acts as a pointer to `custom_fernet.FernetNoBase64.generate_key()`.'''
 
     def __enter__(self) -> "FernetFile":
+        '''Returns self to allow context management.'''
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback) -> None:
+        '''Calls `self.close` and returns `None`.'''
         self.close()
 
     def __del__(self) -> None:
+        '''Calls `self.close` and returns `None`.'''
         self.close()
 
     @property
     def _pos_pointer(self) -> int:
+        '''Stores the Fernet file's current position in the chunk in bytes.\nThe getter returns `self.__pos_pointer`.\nThe setter ensures that 0 < _pos_pointer < chunksize. If it isn't, then it wraps the value round by adding or subtracting the chunksize, modifying the chunk pointer to compensate.'''
         return self.__pos_pointer
     
     @_pos_pointer.setter
@@ -260,6 +316,7 @@ class FernetFile:
 
     @property
     def _chunk_pointer(self) -> int:
+        '''Stores the Fernet file's current chunk number.\nThe getter returns `self.__chunk_pointer`.\nThe setter modifies this value. Before it switching chunks it checks if the current chunk has been modified and writes it if it has. After switching chunks, we read the new chunk into memory.'''
         return self.__chunk_pointer
     
     @_chunk_pointer.setter
