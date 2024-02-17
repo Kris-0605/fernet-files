@@ -36,7 +36,7 @@ with FernetFile(key, "filename.bin") as f:
 ## Requirements
 
 - cryptography <= 42.0.2, >= 36.0.2
-- Python 3.10 or greater (3.10, 3.11, 3.12, 3.13 and 3.14 tested)
+- Python 3.10 or greater (3.10, 3.11 and 3.12 tested)
 
 custom_fernet.py is based on cryptography 41.0.4 and is tested up to 42.0.2. Future versions might break this module. If this has happened, create an issue in this repository.
 
