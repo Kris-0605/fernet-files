@@ -2,14 +2,14 @@
 
 Fernet encryption requires all data to be encrypted or decrypted at once. This is memory intensive, and it is slow if you only want to read part of a file. Fernet Files provides a simple interface that breaks data up into chunks when encrypting and decrypting them to lower memory usage. Data is only encrypted when it's necessary to do so.
 
-You may treat the class similar to a file: it has `read`, `write`, `seek` and `close` methods. It can also be context managed, so you can close it using a `with` statement.
+You may treat the class similar to a file: it has [`read`](#method-fernet_filesfernetfilereadself-size-1), [`write`](#method-fernet_filesfernetfilewriteself-b), [`seek`](#method-fernet_filesfernetfileseekself-offset-whenceosseek_set) and [`close`](#method-fernet_filesfernetfilecloseself) methods. It can also be context managed, so you can close it using a `with` statement.
 
 ## Contents
 
 - [Example usage](#example-usage)
 - [Requirements](#requirements)
 - [Installation](#installation)
-- [Benchmarks](#benchmarks)
+- [Benchmarking](#benchmarking)
 - [Documentation for module users](#documentation-for-module-users)
 - [Documentation for module developers](#documentation-for-module-developers)
 
@@ -33,12 +33,14 @@ with FernetFile(key, "filename.bin") as f:
     f.read() # Returns b'123456789'
 ```
 
+Note: The default chunksize is 64KiB. This means the minimum output file size is 64KiB. If you are encrypting a small amount of data, I recommend you lower the chunksize. However, only do this if necessary as this will damage performance.
+
 ## Requirements
 
-- cryptography >= 41.0.4 (might break in the future, I'll try and keep an eye on it)
+- cryptography <= 42.0.2, >= 36.0.2
 - Python 3.10 or greater (3.10, 3.11 and 3.12 tested)
 
-custom_fernet.py is based on cryptography 41.0.4. If the file it's based on is updated, it might break this module. If this has happened, created an issue in this repository.
+custom_fernet.py is based on [cryptography 41.0.4](https://github.com/pyca/cryptography/blob/f558199dbf33ccbf6dce8150c2cd4658686d6018/src/cryptography/fernet.py) and is tested up to 42.0.2. Future versions might break this module. If this has happened, create an issue in this repository.
 
 ## Installation
 
@@ -46,96 +48,44 @@ custom_fernet.py is based on cryptography 41.0.4. If the file it's based on is u
 pip install fernet_files
 ```
 
-## Benchmarks
-### Info
+## Benchmarking
 
-**Based on these benchmarks, the default chunk size is now 64KiB. It is recommended you change this to a smaller value (e.g. 4KiB) for smaller files.**
+Significant results:
+When encrypting a 4GiB file, vanilla Fernet:
+- Took 106 seconds to encrypt
+- Used 28.6GiB of memory to encrypt
+- Took 54 seconds to decrypt the data enough that the first byte of unencrypted data could be read
 
-- Tests can be found in `benchmark.py` and raw results in `benchmark_results.py`
-- All values are given to 3sf (significant figures).
-- All times are given in milliseconds.
-- All bytes are given with their units.
+When encrypting the same 4GiB file, Fernet Files with the default chunksize:
+- Took 50 seconds to encrypt
+- Used 331KiB of memory to encrypt
+- Took less than 100ms to decrypt the data enough that the first byte of unencrypted data could be read
 
-### Time to encrypt
-
-#### Data
-
-| Raw data size  | 1B     | 16B     | 256B    | 4KiB   | 64KiB  | 1MiB   | 16MiB    | 256MiB  | 4GiB     |
-|----------------|--------|---------|---------|--------|--------|--------|----------|---------|----------|
-| Fernet         | 127ms  | 0.703ms | 0.802ms | 2.16ms | 2.79ms | 15.8ms | 240ms    | 5790ms  | 106000ms |
-| FernetNoBase64 | 1.77ms | 2.00ms  | 1.76ms  | 1.89ms | 2.59ms | 8.01ms | 127ms    | 3560ms  | 73500ms  |
-| FF 16B         | 1.72ms | 2.17ms  | 8.66ms  | 46.1ms | 368ms  | 5530ms | 260000ms | NT      | NT       |
-| FF 256B        | 2.31ms | 2.19ms  | 2.17ms  | 7.97ms | 32.2ms | 338ms  | 21200ms  | NT      | NT       |
-| FF 4KiB        | 3.20ms | 2.82ms  | 2.79ms  | 2.92ms | 9.23ms | 34.2ms | 1670ms   | 26600ms | 400000ms |
-| FF 64KiB       | 3.85ms | 4.14ms  | 4.12ms  | 4.32ms | 4.42ms | 17.2ms | 214ms    | 3020ms  | 49400ms  |
-| FF 1MiB        | 16.0ms | 22.1ms  | 14.8ms  | 15.2ms | 17.5ms | 13.5ms | 174ms    | 2590ms  | 39600ms  |
-| FF 16MiB       | 161ms  | 157ms   | 158ms   | 157ms  | 165ms  | 182ms  | 159ms    | 2400ms  | 37300ms  |
-
-#### Observations
-
-- Fernet encryption for 1 byte is an outliar, likely influenced by external factors
-- FernetNoBase64 is slower than Fernet for data less than 4KiB, and faster for larger data.
-- When using FernetFiles, encryption with low chunk sizes is slow.
-- As chunk size increases, encryption speed increases, as chunk size approaches the size of the raw data.
-- This gives diminishing returns, as can be seen in the 4GiB tests: 16MiB chunks are only marginally faster than 1MiB chunks.
-- When chunk size is equal to raw data size, this is when encryption is fastest.
-- As chunk size increases past the data size, encryption slows down again. For any given chunk size, the new encryption speed seems to be relatively constant (if data size is less than the chunk size).
-- 64KiB appears to be the optimal default chunk size that covers the most reasonable file sizes. 4KiB may be more reasonable for smaller files.
-
-### Time to read first byte (decryption)
-
-#### Data
-
-| Raw data size  | 1B     | 16B    | 256B | 256MiB | 4GiB    |
-|----------------|--------|--------|------|--------|---------|
-| Fernet         | 202ms  | 161ms  | ...  | 3570ms | 54100ms |
-| FernetNoBase64 | 16.0ms | 27.6ms | ...  | 2010ms | 30700ms |
-| FF 16B         | 18.1ms | 33.0ms | ...  | NT     | NT      |
-| FF 256B        | 35.0ms | 251ms  | ...  | NT     | NT      |
-| FF 4KiB        | 309ms  | 22.4ms | ...  | 54.4ms | 84.6ms  |
-| FF 64KiB       | 36.0ms | 38.1ms | ...  | 287ms  | 43.5ms  |
-| FF 1MiB        | 94.7ms | 255ms  | ...  | 90.7ms | 58.1ms  |
-| FF 16MiB       | 548ms  | 608ms  | ...  | 411ms  | 377ms   |
-
-#### Observations
-
-- FernetNoBase64 is much faster at Fernet at decryption. This is more noticeable the smaller the input data.
-- Read times for FernetFiles are too inconsistent for small chunk sizes to draw conclusions. This is likely due to inconsistency in the time it takes to read a file. For this reason, some data has been omitted due to not providing useful insight. Perhaps in future, a random read test, or manipulating data in memory, would be more useful.
-- Very large chunk sizes take longer to read, but this isn't noticeable for most typical chunk sizes (less than 1MiB).
-- Regardless of the inconsistency, reading a byte of a FernetFile is almost always faster than with Fernet (Fernet requires you to decrypt the entire file).
-
-### Peak memory usage
-
-#### Data
-
-| Raw data size  | 1B      | 16B     | 256B    | 4KiB    | 64KiB   | 1MiB    | 16MiB   | 256MiB  | 4GiB     |
-|----------------|---------|---------|---------|---------|---------|---------|---------|---------|----------|
-| Fernet         | 10.7KiB | 9.69KiB | 11.1KiB | 36.1KiB | 436KiB  | 6.68MiB | 107MiB  | 1.67GiB | 26.67GiB |
-| FernetNoBase64 | 10.6KiB | 9.69KiB | 10.3KiB | 25.4KiB | 265KiB  | 4.01MiB | 64.0MiB | 1.00GiB | 16.0GiB  |
-| FF 16B         | 11.2KiB | 10.1KiB | 11.8KiB | 10.9KiB | 11.2KiB | 11.3KiB | 11.0KiB | NT      | NT       |
-| FF 256B        | 11.7KiB | 11.2KiB | 11.1KiB | 12.7KiB | 11.8KiB | 12.0KiB | 12.0KiB | NT      | NT       |
-| FF 4KiB        | 30.2KiB | 29.9KiB | 30.1KiB | 29.9KiB | 30.5KiB | 30.7KiB | 30.8KiB | 30.9KiB | 30.4KiB  |
-| FF 64KiB       | 330KiB  | 330KiB  | 330KiB  | 334KiB  | 330KiB  | 331KiB  | 331KiB  | 331KiB  | 331KiB   |
-| FF 1MiB        | 5.01MiB | 5.01MiB | 5.01MiB | 5.01MiB | 5.07MiB | 5.01MiB | 5.01MiB | 5.01MiB | 5.01MiB  |
-| FF 16MiB       | 80.0MiB | 80.0MiB | 80.0MiB | 80.0MiB | 80.1MiB | 81.0MiB | 80.0MiB | 80.0MiB | 80.0MiB  |
-
-#### Observations
-
-- Fernet uses approximately 10KB $+$ datasize $\times$ 6.67
-- FernetNoBase64 uses approximately 10KB $+$ datasize $\times$ 4
-- As a result, FernetFiles uses approximately 10KB $+$ chunksize $\times$ 5, though this can vary slightly due to overhead from padding. (the additional x1 is the memory used to store the chunk)
-- FernetFiles offers a trade off: much less memory usage, in exchange for increased processing time. If your objective is to encrypt an extremely large file as quickly as possible, then set the chunk size equal to your available memory divided by 6.
-- Memory usage during decryption has not been included in a table because it is very similar to the table. Not this does not mean that the memory usage is similar, but that the trends seen in the data are similar.
+For more information, see [BENCHMARKING.md](/benchmarking/BENCHMARKING.md).
 
 ## Documentation for module users
+
+### Contents
+
+- [`fernet_files.FernetFile`](#class-fernet_filesfernetfileself-key-file-chunksize65536)
+- - [`fernet_files.FernetFile.read`](#method-fernet_filesfernetfilereadself-size-1)
+- - [`fernet_files.FernetFile.write`](#method-fernet_filesfernetfilewriteself-b)
+- - [`fernet_files.FernetFile.seek`](#method-fernet_filesfernetfileseekself-offset-whenceosseek_set)
+- - [`fernet_files.FernetFile.close`](#method-fernet_filesfernetfilecloseself)
+- - [`fernet_files.FernetFile.generate_key`](#static-method-fernet_filesfernetfilegenerate_key)
+- - [`fernet_files.FernetFile.closed`](#bool-fernet_filesfernetfileclosed)
+- - [`fernet_files.FernetFile.writeable`](#bool-fernet_filesfernetfilewriteable)
+- [`fernet_files.META_SIZE`](#int-fernet_filesmeta_size)
+- [`fernet_files.DEFAULT_CHUNKSIZE`](#int-fernet_filesdefault_chunksize)
+- [`fernet_files.custom_fernet.FernetNoBase64`](#class-fernet_filescustom_fernetfernetnobase64self-key)
 
 ### class `fernet_files.FernetFile(self, key, file, chunksize=65536)`
 
 Parameters:
 
-- **key** - A key (recommended) or a `fernet_files.custom_fernet.FernetNoBase64` object
-- - A key must be 32 random bytes. Get using `fernet_files.FernetFile.generate_key()` and store somewhere secure
-- - Alternatively, pass in a `fernet_files.custom_fernet.FernetNoBase64` object
+- **key** - A key (recommended) or a [`fernet_files.custom_fernet.FernetNoBase64`](#class-fernet_filescustom_fernetfernetnobase64self-key) object
+- - A key must be 32 random bytes. Get using [`fernet_files.FernetFile.generate_key()`](#static-method-fernet_filesfernetfilegenerate_key) and store somewhere secure
+- - Alternatively, pass in a [`fernet_files.custom_fernet.FernetNoBase64`](#class-fernet_filescustom_fernetfernetnobase64self-key) object
 - **file** - Accepts a filename as a string, or a file-like object. If passing in a file-like object, it would be opened in binary mode.
 - **chunksize** - The size of chunks in bytes. 
 - - Bigger chunks use more memory and take longer to read or write, but smaller chunks can be very slow when trying to read/write in large quantities.
@@ -184,7 +134,7 @@ Static method used to generate a key. Acts as a pointer to `custom_fernet.Fernet
 
 #### bool `fernet_files.FernetFile.closed`
 
-Boolean attribute representing whether the file is closed or not. True means the file is closed, False means the file is open. It is highly recommended that you do not modify this, and use the `close` method instead.
+Boolean attribute representing whether the file is closed or not. True means the file is closed, False means the file is open. It is highly recommended that you do not modify this, and use the [`close`](#method-fernet_filesfernetfilecloseself) method instead.
 
 #### bool `fernet_files.FernetFile.writeable`
 
@@ -210,11 +160,38 @@ The chunksize that is used by default, currently 4096 bytes.
 
 #### class `fernet_files.custom_fernet.FernetNoBase64(self, key)`
 
-`cryptography.fernet.Fernet` without any base64 encoding or decoding. See `custom_fernet.py` for more info.
+`cryptography.fernet.Fernet` without any base64 encoding or decoding. See [`custom_fernet.py`](/src/fernet_files/custom_fernet.py) for more info.
 
 ## Documentation for module developers
 
+### Contents
+
+- [`fernet_files.FernetFile`](#class-fernet_filesfernetfile)
+- - [`fernet_files.FernetFile.__chunk`](#bytesio-fernet_filesfernetfile__chunk)
+- - [`fernet_files.FernetFile.__file`](#rawiobase-or-bufferediobase-or-bytesio-fernet_filesfernetfile__file)
+- - [`fernet_files.FernetFile.__last_chunk`](#int-fernet_filesfernetfile__last_chunk)
+- - [`fernet_files.FernetFile.__last_chunk_padding`](#int-fernet_filesfernetfile__last_chunk_padding)
+- - [`fernet_files.FernetFile.__data_chunksize`](#int-fernet_filesfernetfile__data_chunksize)
+- - [`fernet_files.FernetFile.__chunksize`](#int-fernet_filesfernetfile__chunksize)
+- - [`fernet_files.FernetFile.__chunk_modified`](#bool-fernet_filesfernetfile__chunk_modified)
+- - [`fernet_files.FernetFile._pos_pointer`](#property-int-fernet_filesfernetfile_pos_pointer)
+- - [`fernet_files.FernetFile.__pos_pointer`](#int-fernet_filesfernetfile__pos_pointer)
+- - [`fernet_files.FernetFile._chunk_pointer`](#property-int-fernet_filesfernetfile_chunk_pointer)
+- - [`fernet_files.FernetFile.__chunk_pointer`](#int-fernet_filesfernetfile__chunk_pointer)
+- - [`fernet_files.FernetFile.__goto_current_chunk`](#method-fernet_filesfernetfile__goto_current_chunkself)
+- - [`fernet_files.FernetFile.__get_file_size`](#method-fernet_filesfernetfile__get__file_sizeself)
+- - [`fernet_files.FernetFile.__read_chunk`](#method-fernet_filesfernetfile__read_chunkself)
+- - [`fernet_files.FernetFile.__write_chunk`](#method-fernet_filesfernetfile__write_chunkself)
+- - [`fernet_files.FernetFile.__enter__`](#method-fernet_filesfernetfile__enter__self)
+- - [`fernet_files.FernetFile.__exit__`](#method-fernet_filesfernetfile__exit__self-exc_type-exc_value-exc_traceback)
+- - [`fernet_files.FernetFile.__del__`](#method-fernet_filesfernetfile__del__self)
+- - [`fernet_files.FernetFile.__fernet`](#custom_fernetfernetnobase64-fernet_filesfernetfile__fernet)
+
 ### class `fernet_files.FernetFile`
+
+#### BytesIO `fernet_files.FernetFile.__chunk`
+
+A BytesIO object that stores the contents of the current chunk in memory. When data is written to a chunk, it is this data in memory that is manipulated. The data is then only written to a file when [`__write_chunk`](#method-fernet_filesfernetfile__write_chunkself) is called.
 
 #### (RawIOBase or BufferedIOBase or BytesIO) `fernet_files.FernetFile.__file`
 
@@ -242,27 +219,27 @@ This formula calculates the size of a Fernet token, based on the [Fernet specifi
 
 #### bool `fernet_files.FernetFile.__chunk_modified`
 
-Boolean attribute representing whether the data stored in `self.__chunk` has been modified relative to the data stored within the `self.__file`. True if the chunk has been modified, False if it hasn't.
+Boolean attribute representing whether the data stored in [`self.__chunk`](#bytesio-fernet_filesfernetfile__chunk) has been modified relative to the data stored within the [`self.__file`](#rawiobase-or-bufferediobase-or-bytesio-fernet_filesfernetfile__file). True if the chunk has been modified, False if it hasn't.
 
 #### property int `fernet_files.FernetFile._pos_pointer`
 
-Stores the Fernet file's current position in the chunk in bytes. The getter returns `self.__pos_pointer`. The setter ensures that $0\leq$ _pos_pointer $<$ chunksize. If it isn't, then it wraps the value round by adding or subtracting the chunksize, modifying the chunk pointer to compensate.
+Stores the Fernet file's current position in the chunk in bytes. The getter returns [`self.__pos_pointer`](#int-fernet_filesfernetfile__pos_pointer). The setter ensures that $0\leq$ _pos_pointer $<$ chunksize. If it isn't, then it wraps the value round by adding or subtracting the chunksize, modifying the chunk pointer to compensate.
 
 #### int `fernet_files.FernetFile.__pos_pointer`
 
-Stores the value for `self._pos_pointer`.
+Stores the value for [`self._pos_pointer`](#property-int-fernet_filesfernetfile_pos_pointer).
 
 #### property int `fernet_files.FernetFile._chunk_pointer`
 
-Stores the Fernet file's current chunk number. The getter returns `self.__chunk_pointer`. The setter modifies this value. Before it switching chunks it checks if the current chunk has been modified and writes it if it has. After switching chunks, we read the new chunk into memory.
+Stores the Fernet file's current chunk number. The getter returns [`self.__chunk_pointer`](#int-fernet_filesfernetfile__chunk_pointer). The setter modifies this value. Before it switching chunks it checks if the current chunk has been modified and writes it if it has. After switching chunks, we read the new chunk into memory.
 
 #### int `fernet_files.FernetFile.__chunk_pointer`
 
-Stores the value for `self._chunk_pointer`.
+Stores the value for [`self._chunk_pointer`](#property-int-fernet_filesfernetfile_chunk_pointer).
 
 #### method `fernet_files.FernetFile.__goto_current_chunk(self)`
 
-Moves our position in `self.__file` to the location represented by the chunk pointer, taking into account the metadata at the start of the file. Calculated as follows: take the number of the chunk you're currently on, multiply by the size of chunks when they're written to disk. Take the META_SIZE, multiply that by 2 and add it to the number you had before.
+Moves our position in [`self.__file`](#rawiobase-or-bufferediobase-or-bytesio-fernet_filesfernetfile__file) to the location represented by the chunk pointer, taking into account the metadata at the start of the file. Calculated as follows: take the number of the chunk you're currently on, multiply by the size of chunks when they're written to disk. Take the META_SIZE, multiply that by 2 and add it to the number you had before.
 
 #### method `fernet_files.FernetFile.__get__file_size(self)`
 
@@ -270,11 +247,11 @@ Calculate the size of the data contained within the file in bytes using the file
 
 #### method `fernet_files.FernetFile.__read_chunk(self)`
 
-Reads and decrypts the current chunk, turns it into a BytesIO object, stores that object in `self.__chunk` and returns it. If the chunk has been modified, it is already loaded into memory so no file operations are done. Also responsible for removing padding if the chunk being read is the last chunk.
+Reads and decrypts the current chunk, turns it into a BytesIO object, stores that object in [`self.__chunk`](#bytesio-fernet_filesfernetfile__chunk) and returns it. If the chunk has been modified, it is already loaded into memory so no file operations are done. Also responsible for removing padding if the chunk being read is the last chunk.
 
 #### method `fernet_files.FernetFile.__write_chunk(self)`
 
-Encrypts and writes the chunk, and sets `self.__chunk_modified` to False. Also responsible for applying padding and modifying the metadata at the start of the file if this is the last chunk.
+Encrypts and writes the chunk, and sets [`self.__chunk_modified`](#bool-fernet_filesfernetfile__chunk_modified) to False. Also responsible for applying padding and modifying the metadata at the start of the file if this is the last chunk.
 
 #### method `fernet_files.FernetFile.__enter__(self)`
 
@@ -282,11 +259,11 @@ Returns self to allow context management.
 
 #### method `fernet_files.FernetFile.__exit__(self, exc_type, exc_value, exc_traceback)`
 
-Calls `self.close` and returns `None`.
+Calls [`self.close`](#method-fernet_filesfernetfilecloseself) and returns `None`.
 
 #### method `fernet_files.FernetFile.__del__(self)`
 
-Calls `self.close` and returns `None`.
+Calls [`self.close`](#method-fernet_filesfernetfilecloseself) and returns `None`.
 
 #### custom_fernet.FernetNoBase64 `fernet_files.FernetFile.__fernet`
 
