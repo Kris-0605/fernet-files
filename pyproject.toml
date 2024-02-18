@@ -9,7 +9,7 @@ description = "Encryption/decryption of files with cryptography.fernet, but with
 authors = [
     {name = "Christopher Ashford", email = "christopherash0605@gmail.com"},
 ]
-readme = "README.md"
+readme = "README-pypi.md"
 requires-python = ">=3.10"
 keywords = ["fernet", "fernetfile", "fernet_file", "fernetfiles"] # What do I put here?
 classifiers = [
