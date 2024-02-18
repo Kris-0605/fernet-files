@@ -2,7 +2,7 @@
 
 Fernet encryption requires all data to be encrypted or decrypted at once. This is memory intensive, and it is slow if you only want to read part of a file. Fernet Files provides a simple interface that breaks data up into chunks when encrypting and decrypting them to lower memory usage. Data is only encrypted when it's necessary to do so.
 
-You may treat the class similar to a file: it has `read`, `write`, `seek` and `close` methods. It can also be context managed, so you can close it using a `with` statement.
+You may treat the class similar to a file: it has [`read`](#method-fernet_filesfernetfilereadself-size-1), [`write`](#method-fernet_filesfernetfilewriteself-b), [`seek`](#method-fernet_filesfernetfileseekself-offset-whenceosseek_set) and [`close`](#method-fernet_filesfernetfilecloseself) methods. It can also be context managed, so you can close it using a `with` statement.
 
 ## Contents
 
@@ -40,7 +40,7 @@ Note: The default chunksize is 64KiB. This means the minimum output file size is
 - cryptography <= 42.0.2, >= 36.0.2
 - Python 3.10 or greater (3.10, 3.11 and 3.12 tested)
 
-custom_fernet.py is based on cryptography 41.0.4 and is tested up to 42.0.2. Future versions might break this module. If this has happened, create an issue in this repository.
+custom_fernet.py is based on [cryptography 41.0.4](https://github.com/pyca/cryptography/blob/f558199dbf33ccbf6dce8150c2cd4658686d6018/src/cryptography/fernet.py) and is tested up to 42.0.2. Future versions might break this module. If this has happened, create an issue in this repository.
 
 ## Installation
 
@@ -69,9 +69,9 @@ For more information, see [BENCHMARKING.md](/benchmarking/BENCHMARKING.md).
 
 Parameters:
 
-- **key** - A key (recommended) or a `fernet_files.custom_fernet.FernetNoBase64` object
-- - A key must be 32 random bytes. Get using `fernet_files.FernetFile.generate_key()` and store somewhere secure
-- - Alternatively, pass in a `fernet_files.custom_fernet.FernetNoBase64` object
+- **key** - A key (recommended) or a [`fernet_files.custom_fernet.FernetNoBase64`](#class-fernet_filescustom_fernetfernetnobase64self-key) object
+- - A key must be 32 random bytes. Get using [`fernet_files.FernetFile.generate_key()`](#static-method-fernet_filesfernetfilegenerate_key) and store somewhere secure
+- - Alternatively, pass in a [`fernet_files.custom_fernet.FernetNoBase64`](#class-fernet_filescustom_fernetfernetnobase64self-key) object
 - **file** - Accepts a filename as a string, or a file-like object. If passing in a file-like object, it would be opened in binary mode.
 - **chunksize** - The size of chunks in bytes. 
 - - Bigger chunks use more memory and take longer to read or write, but smaller chunks can be very slow when trying to read/write in large quantities.
@@ -120,7 +120,7 @@ Static method used to generate a key. Acts as a pointer to `custom_fernet.Fernet
 
 #### bool `fernet_files.FernetFile.closed`
 
-Boolean attribute representing whether the file is closed or not. True means the file is closed, False means the file is open. It is highly recommended that you do not modify this, and use the `close` method instead.
+Boolean attribute representing whether the file is closed or not. True means the file is closed, False means the file is open. It is highly recommended that you do not modify this, and use the [`close`](#method-fernet_filesfernetfilecloseself) method instead.
 
 #### bool `fernet_files.FernetFile.writeable`
 
@@ -146,7 +146,7 @@ The chunksize that is used by default, currently 4096 bytes.
 
 #### class `fernet_files.custom_fernet.FernetNoBase64(self, key)`
 
-`cryptography.fernet.Fernet` without any base64 encoding or decoding. See `custom_fernet.py` for more info.
+`cryptography.fernet.Fernet` without any base64 encoding or decoding. See [`custom_fernet.py`](/src/fernet_files/custom_fernet.py) for more info.
 
 ## Documentation for module developers
 
@@ -178,27 +178,27 @@ This formula calculates the size of a Fernet token, based on the [Fernet specifi
 
 #### bool `fernet_files.FernetFile.__chunk_modified`
 
-Boolean attribute representing whether the data stored in `self.__chunk` has been modified relative to the data stored within the `self.__file`. True if the chunk has been modified, False if it hasn't.
+Boolean attribute representing whether the data stored in `self.__chunk` has been modified relative to the data stored within the [`self.__file`](#rawiobase-or-bufferediobase-or-bytesio-fernet_filesfernetfile__file). True if the chunk has been modified, False if it hasn't.
 
 #### property int `fernet_files.FernetFile._pos_pointer`
 
-Stores the Fernet file's current position in the chunk in bytes. The getter returns `self.__pos_pointer`. The setter ensures that $0\leq$ _pos_pointer $<$ chunksize. If it isn't, then it wraps the value round by adding or subtracting the chunksize, modifying the chunk pointer to compensate.
+Stores the Fernet file's current position in the chunk in bytes. The getter returns [`self.__pos_pointer`](#int-fernet_filesfernetfile__pos_pointer). The setter ensures that $0\leq$ _pos_pointer $<$ chunksize. If it isn't, then it wraps the value round by adding or subtracting the chunksize, modifying the chunk pointer to compensate.
 
 #### int `fernet_files.FernetFile.__pos_pointer`
 
-Stores the value for `self._pos_pointer`.
+Stores the value for [`self._pos_pointer`](#property-int-fernet_filesfernetfile_pos_pointer).
 
 #### property int `fernet_files.FernetFile._chunk_pointer`
 
-Stores the Fernet file's current chunk number. The getter returns `self.__chunk_pointer`. The setter modifies this value. Before it switching chunks it checks if the current chunk has been modified and writes it if it has. After switching chunks, we read the new chunk into memory.
+Stores the Fernet file's current chunk number. The getter returns [`self.__chunk_pointer`](#int-fernet_filesfernetfile__chunk_pointer). The setter modifies this value. Before it switching chunks it checks if the current chunk has been modified and writes it if it has. After switching chunks, we read the new chunk into memory.
 
 #### int `fernet_files.FernetFile.__chunk_pointer`
 
-Stores the value for `self._chunk_pointer`.
+Stores the value for [`self._chunk_pointer`](#property-int-fernet_filesfernetfile_chunk_pointer).
 
 #### method `fernet_files.FernetFile.__goto_current_chunk(self)`
 
-Moves our position in `self.__file` to the location represented by the chunk pointer, taking into account the metadata at the start of the file. Calculated as follows: take the number of the chunk you're currently on, multiply by the size of chunks when they're written to disk. Take the META_SIZE, multiply that by 2 and add it to the number you had before.
+Moves our position in [`self.__file`](#rawiobase-or-bufferediobase-or-bytesio-fernet_filesfernetfile__file) to the location represented by the chunk pointer, taking into account the metadata at the start of the file. Calculated as follows: take the number of the chunk you're currently on, multiply by the size of chunks when they're written to disk. Take the META_SIZE, multiply that by 2 and add it to the number you had before.
 
 #### method `fernet_files.FernetFile.__get__file_size(self)`
 
@@ -210,7 +210,7 @@ Reads and decrypts the current chunk, turns it into a BytesIO object, stores tha
 
 #### method `fernet_files.FernetFile.__write_chunk(self)`
 
-Encrypts and writes the chunk, and sets `self.__chunk_modified` to False. Also responsible for applying padding and modifying the metadata at the start of the file if this is the last chunk.
+Encrypts and writes the chunk, and sets [`self.__chunk_modified`](#bool-fernet_filesfernetfile__chunk_modified) to False. Also responsible for applying padding and modifying the metadata at the start of the file if this is the last chunk.
 
 #### method `fernet_files.FernetFile.__enter__(self)`
 
@@ -218,11 +218,11 @@ Returns self to allow context management.
 
 #### method `fernet_files.FernetFile.__exit__(self, exc_type, exc_value, exc_traceback)`
 
-Calls `self.close` and returns `None`.
+Calls [`self.close`](#method-fernet_filesfernetfilecloseself) and returns `None`.
 
 #### method `fernet_files.FernetFile.__del__(self)`
 
-Calls `self.close` and returns `None`.
+Calls [`self.close`](#method-fernet_filesfernetfilecloseself) and returns `None`.
 
 #### custom_fernet.FernetNoBase64 `fernet_files.FernetFile.__fernet`
 
