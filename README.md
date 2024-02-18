@@ -152,6 +152,10 @@ The chunksize that is used by default, currently 4096 bytes.
 
 ### class `fernet_files.FernetFile`
 
+#### BytesIO `fernet_files.FernetFile.__chunk`
+
+A BytesIO object that stores the contents of the current chunk in memory. When data is written to a chunk, it is this data in memory that is manipulated. The data is then only written to a file when [`__write_chunk`](#method-fernet_filesfernetfile__write_chunkself) is called.
+
 #### (RawIOBase or BufferedIOBase or BytesIO) `fernet_files.FernetFile.__file`
 
 The file object used for reading and writing. If a filename is provided then this is opened in "wb+" mode.
@@ -178,7 +182,7 @@ This formula calculates the size of a Fernet token, based on the [Fernet specifi
 
 #### bool `fernet_files.FernetFile.__chunk_modified`
 
-Boolean attribute representing whether the data stored in `self.__chunk` has been modified relative to the data stored within the [`self.__file`](#rawiobase-or-bufferediobase-or-bytesio-fernet_filesfernetfile__file). True if the chunk has been modified, False if it hasn't.
+Boolean attribute representing whether the data stored in [`self.__chunk`](#bytesio-fernet_filesfernetfile__chunk) has been modified relative to the data stored within the [`self.__file`](#rawiobase-or-bufferediobase-or-bytesio-fernet_filesfernetfile__file). True if the chunk has been modified, False if it hasn't.
 
 #### property int `fernet_files.FernetFile._pos_pointer`
 
@@ -206,7 +210,7 @@ Calculate the size of the data contained within the file in bytes using the file
 
 #### method `fernet_files.FernetFile.__read_chunk(self)`
 
-Reads and decrypts the current chunk, turns it into a BytesIO object, stores that object in `self.__chunk` and returns it. If the chunk has been modified, it is already loaded into memory so no file operations are done. Also responsible for removing padding if the chunk being read is the last chunk.
+Reads and decrypts the current chunk, turns it into a BytesIO object, stores that object in [`self.__chunk`](#bytesio-fernet_filesfernetfile__chunk) and returns it. If the chunk has been modified, it is already loaded into memory so no file operations are done. Also responsible for removing padding if the chunk being read is the last chunk.
 
 #### method `fernet_files.FernetFile.__write_chunk(self)`
 
