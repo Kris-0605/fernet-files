@@ -51,12 +51,12 @@ pip install fernet_files
 ## Benchmarking
 
 Significant results:
-When encrypting a 4GB file, vanilla Fernet:
+When encrypting a 4GiB file, vanilla Fernet:
 - Took 106 seconds to encrypt
-- Used 28.GiB of memory to encrypt
+- Used 28.6GiB of memory to encrypt
 - Took 54 seconds to decrypt the data enough that the first byte of unencrypted data could be read
 
-When encrypting the same 4GB file, Fernet Files with the default chunksize:
+When encrypting the same 4GiB file, Fernet Files with the default chunksize:
 - Took 50 seconds to encrypt
 - Used 331KiB of memory to encrypt
 - Took less than 100ms to decrypt the data enough that the first byte of unencrypted data could be read
@@ -64,6 +64,20 @@ When encrypting the same 4GB file, Fernet Files with the default chunksize:
 For more information, see [BENCHMARKING.md](/benchmarking/BENCHMARKING.md).
 
 ## Documentation for module users
+
+### Contents
+
+- [`fernet_files.FernetFile`](#class-fernet_filesfernetfileself-key-file-chunksize65536)
+- - [`fernet_files.FernetFile.read`](#method-fernet_filesfernetfilereadself-size-1)
+- - [`fernet_files.FernetFile.write`](#method-fernet_filesfernetfilewriteself-b)
+- - [`fernet_files.FernetFile.seek`](#method-fernet_filesfernetfileseekself-offset-whenceosseek_set)
+- - [`fernet_files.FernetFile.close`](#method-fernet_filesfernetfilecloseself)
+- - [`fernet_files.FernetFile.generate_key`](#static-method-fernet_filesfernetfilegenerate_key)
+- - [`fernet_files.FernetFile.closed`](#bool-fernet_filesfernetfileclosed)
+- - [`fernet_files.FernetFile.writeable`](#bool-fernet_filesfernetfilewriteable)
+- [`fernet_files.META_SIZE`](#int-fernet_filesmeta_size)
+- [`fernet_files.DEFAULT_CHUNKSIZE`](#int-fernet_filesdefault_chunksize)
+- [`fernet_files.custom_fernet.FernetNoBase64`](#class-fernet_filescustom_fernetfernetnobase64self-key)
 
 ### class `fernet_files.FernetFile(self, key, file, chunksize=65536)`
 
@@ -149,6 +163,29 @@ The chunksize that is used by default, currently 4096 bytes.
 `cryptography.fernet.Fernet` without any base64 encoding or decoding. See [`custom_fernet.py`](/src/fernet_files/custom_fernet.py) for more info.
 
 ## Documentation for module developers
+
+### Contents
+
+- [`fernet_files.FernetFile`](#class-fernet_filesfernetfile)
+- - [`fernet_files.FernetFile.__chunk`](#bytesio-fernet_filesfernetfile__chunk)
+- - [`fernet_files.FernetFile.__file`](#rawiobase-or-bufferediobase-or-bytesio-fernet_filesfernetfile__file)
+- - [`fernet_files.FernetFile.__last_chunk`](#int-fernet_filesfernetfile__last_chunk)
+- - [`fernet_files.FernetFile.__last_chunk_padding`](#int-fernet_filesfernetfile__last_chunk_padding)
+- - [`fernet_files.FernetFile.__data_chunksize`](#int-fernet_filesfernetfile__data_chunksize)
+- - [`fernet_files.FernetFile.__chunksize`](#int-fernet_filesfernetfile__chunksize)
+- - [`fernet_files.FernetFile.__chunk_modified`](#bool-fernet_filesfernetfile__chunk_modified)
+- - [`fernet_files.FernetFile._pos_pointer`](#property-int-fernet_filesfernetfile_pos_pointer)
+- - [`fernet_files.FernetFile.__pos_pointer`](#int-fernet_filesfernetfile__pos_pointer)
+- - [`fernet_files.FernetFile._chunk_pointer`](#property-int-fernet_filesfernetfile_chunk_pointer)
+- - [`fernet_files.FernetFile.__chunk_pointer`](#int-fernet_filesfernetfile__chunk_pointer)
+- - [`fernet_files.FernetFile.__goto_current_chunk`](#method-fernet_filesfernetfile__goto_current_chunkself)
+- - [`fernet_files.FernetFile.__get_file_size`](#method-fernet_filesfernetfile__get__file_sizeself)
+- - [`fernet_files.FernetFile.__read_chunk`](#method-fernet_filesfernetfile__read_chunkself)
+- - [`fernet_files.FernetFile.__write_chunk`](#method-fernet_filesfernetfile__write_chunkself)
+- - [`fernet_files.FernetFile.__enter__`](#method-fernet_filesfernetfile__enter__self)
+- - [`fernet_files.FernetFile.__exit__`](#method-fernet_filesfernetfile__exit__self-exc_type-exc_value-exc_traceback)
+- - [`fernet_files.FernetFile.__del__`](#method-fernet_filesfernetfile__del__self)
+- - [`fernet_files.FernetFile.__fernet`](#custom_fernetfernetnobase64-fernet_filesfernetfile__fernet)
 
 ### class `fernet_files.FernetFile`
 
