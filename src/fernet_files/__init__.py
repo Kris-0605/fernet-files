@@ -7,6 +7,8 @@ Data is only encrypted when it's necessary to do so.
 You may treat the class similar to a file: it has `read`, `write`, `seek` and `close` methods.
 It can also be context managed, so you can close it using a `with` statement.'''
 
+__version__ = "0.1.2"
+
 from fernet_files.custom_fernet import FernetNoBase64
 import os
 import os.path

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fernet_files"
-version = "0.1.1"
+version = "0.1.2"
 description = "Encryption/decryption of files with cryptography.fernet, but with file-like methods"
 authors = [
     {name = "Christopher Ashford", email = "christopherash0605@gmail.com"},
