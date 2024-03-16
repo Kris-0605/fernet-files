@@ -62,7 +62,7 @@ When encrypting the same 4GiB file, Fernet Files with the default chunksize:
 - Used 331KiB of memory to encrypt
 - Took less than 100ms to decrypt the data enough that the first byte of unencrypted data could be read
 
-For more information, see [BENCHMARKING.md](/benchmarking/BENCHMARKING.md).
+For more information, see [BENCHMARKING.md](/benchmarking/v0.1.0/BENCHMARKING.md).
 
 ## Documentation for module users
 
