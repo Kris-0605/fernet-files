@@ -37,10 +37,10 @@ Note: The default chunksize is 64KiB. This means the minimum output file size is
 
 ## Requirements
 
-- cryptography <= 42.0.2, >= 36.0.2
+- cryptography <= 42.0.5, >= 36.0.2
 - Python 3.10 or greater (3.10, 3.11 and 3.12 tested)
 
-custom_fernet.py is based on [cryptography 41.0.4](https://github.com/pyca/cryptography/blob/f558199dbf33ccbf6dce8150c2cd4658686d6018/src/cryptography/fernet.py) and is tested up to 42.0.2. Future versions might break this module. If this has happened, create an issue in this repository.
+custom_fernet.py is based on [cryptography 41.0.4](https://github.com/pyca/cryptography/blob/f558199dbf33ccbf6dce8150c2cd4658686d6018/src/cryptography/fernet.py) and is tested up to 42.0.5. Future versions might break this module. If this has happens, create an issue in this repository.
 
 ## Installation
 
