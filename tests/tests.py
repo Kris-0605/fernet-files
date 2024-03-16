@@ -53,6 +53,9 @@ def execute_test(desc: str, test: Callable) -> None:
             if TQDM_AVAILABLE: pbar.update(1)
 
 class TestFernetFiles(unittest.TestCase):
+    def test_seekable(self):
+        self.assertEqual(fernet_files.FernetFile.seekable(), True)
+
     def test_invalid_chunksizes(self):
         for chunksize in (1.5, "1", b"1"):
             self.assertRaises(TypeError, fernet_files.FernetFile, fernet_files.FernetFile.generate_key(), BytesIO(), chunksize=chunksize)

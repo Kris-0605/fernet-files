@@ -51,6 +51,9 @@ class FernetFile:
         else:
             raise TypeError("File must be binary file or a filename")
         
+        if not self.__file.seekable():
+            raise IOError("Fernet File only supports seekable files")
+
         # chunksize validation
         if not isinstance(chunksize, int):
             raise TypeError("Invalid chunksize, must be integer greater than 0")
@@ -280,6 +283,10 @@ Parameters:
         except AttributeError:
             # fixes https://github.com/Kris-0605/fernet_files/issues/4
             pass
+
+    def seekable(self) -> bool:
+        '''Returns if the file is seekable or not. Will always return `True`.'''
+        return True
 
     generate_key = FernetNoBase64.generate_key
     '''Static method used to generate a key. Acts as a pointer to `custom_fernet.FernetNoBase64.generate_key()`.'''

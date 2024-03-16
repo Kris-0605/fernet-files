@@ -75,6 +75,7 @@ For more information, see [BENCHMARKING.md](/benchmarking/BENCHMARKING.md).
 - - [`fernet_files.FernetFile.generate_key`](#static-method-fernet_filesfernetfilegenerate_key)
 - - [`fernet_files.FernetFile.closed`](#bool-fernet_filesfernetfileclosed)
 - - [`fernet_files.FernetFile.writeable`](#bool-fernet_filesfernetfilewriteable)
+- - [`fernet_files.FernetFile.seekable`](#method-fernet_filesfernetfileseekableself)
 - [`fernet_files.META_SIZE`](#int-fernet_filesmeta_size)
 - [`fernet_files.DEFAULT_CHUNKSIZE`](#int-fernet_filesdefault_chunksize)
 - [`fernet_files.custom_fernet.FernetNoBase64`](#class-fernet_filescustom_fernetfernetnobase64self-key)
@@ -86,7 +87,7 @@ Parameters:
 - **key** - A key (recommended) or a [`fernet_files.custom_fernet.FernetNoBase64`](#class-fernet_filescustom_fernetfernetnobase64self-key) object
 - - A key must be 32 random bytes. Get using [`fernet_files.FernetFile.generate_key()`](#static-method-fernet_filesfernetfilegenerate_key) and store somewhere secure
 - - Alternatively, pass in a [`fernet_files.custom_fernet.FernetNoBase64`](#class-fernet_filescustom_fernetfernetnobase64self-key) object
-- **file** - Accepts a filename as a string, or a file-like object. If passing in a file-like object, it would be opened in binary mode.
+- **file** - Accepts a filename as a string, or a file-like object. If passing in a file-like object, it must be open in binary mode and must be seekable.
 - **chunksize** - The size of chunks in bytes. 
 - - Bigger chunks use more memory and take longer to read or write, but smaller chunks can be very slow when trying to read/write in large quantities.
 - - Bigger chunks apply padding so a very large chunksize will create a large file. Every chunk has its own metadata so a very small chunk size will create a large file.
@@ -139,6 +140,10 @@ Boolean attribute representing whether the file is closed or not. True means the
 #### bool `fernet_files.FernetFile.writeable`
 
 Boolean attribute representing whether the file can be written to or not. True if you can write to the file, False if you can't. Will only be False if you passed in a read-only file. It is highly recommended that you do not modify this.
+
+#### method `fernet_files.FernetFile.seekable(self)`
+
+Always returns `True`. FernetFile only supports seekable files.
 
 ### Misc
 
