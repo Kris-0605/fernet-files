@@ -2,7 +2,7 @@
 
 Fernet encryption requires all data to be encrypted or decrypted at once. This is memory intensive, and it is slow if you only want to read part of a file. Fernet Files provides a simple interface that breaks data up into chunks when encrypting and decrypting them to lower memory usage. Data is only encrypted when it's necessary to do so.
 
-You may treat the class similar to a file: it has [`read`](#method-fernet_filesfernetfilereadself-size-1), [`write`](#method-fernet_filesfernetfilewriteself-b), [`seek`](#method-fernet_filesfernetfileseekself-offset-whenceosseek_set) and [`close`](#method-fernet_filesfernetfilecloseself) methods. It can also be context managed, so you can close it using a `with` statement.
+You may treat the class similar to (but not the same as) a file: it has [`read`](#method-fernet_filesfernetfilereadself-size-1---bytes), [`write`](#method-fernet_filesfernetfilewriteself-b---int), [`seek`](#method-fernet_filesfernetfileseekself-offset-whenceosseek_set---int) and [`close`](#method-fernet_filesfernetfilecloseself---bytesio--none) methods. It can also be context managed, so you can close it using a `with` statement.
 
 ## Contents
 
@@ -68,14 +68,14 @@ For more information, see [BENCHMARKING.md](/benchmarking/BENCHMARKING.md).
 ### Contents
 
 - [`fernet_files.FernetFile`](#class-fernet_filesfernetfileself-key-file-chunksize65536)
-- - [`fernet_files.FernetFile.read`](#method-fernet_filesfernetfilereadself-size-1)
-- - [`fernet_files.FernetFile.write`](#method-fernet_filesfernetfilewriteself-b)
-- - [`fernet_files.FernetFile.seek`](#method-fernet_filesfernetfileseekself-offset-whenceosseek_set)
-- - [`fernet_files.FernetFile.close`](#method-fernet_filesfernetfilecloseself)
-- - [`fernet_files.FernetFile.generate_key`](#static-method-fernet_filesfernetfilegenerate_key)
+- - [`fernet_files.FernetFile.read`](#method-fernet_filesfernetfilereadself-size-1---bytes)
+- - [`fernet_files.FernetFile.write`](#method-fernet_filesfernetfilewriteself-b---int)
+- - [`fernet_files.FernetFile.seek`](#method-fernet_filesfernetfileseekself-offset-whenceosseek_set---int)
+- - [`fernet_files.FernetFile.close`](#method-fernet_filesfernetfilecloseself---bytesio--none)
+- - [`fernet_files.FernetFile.generate_key`](#static-method-fernet_filesfernetfilegenerate_key---bytes)
 - - [`fernet_files.FernetFile.closed`](#bool-fernet_filesfernetfileclosed)
 - - [`fernet_files.FernetFile.writeable`](#bool-fernet_filesfernetfilewriteable)
-- - [`fernet_files.FernetFile.seekable`](#method-fernet_filesfernetfileseekableself)
+- - [`fernet_files.FernetFile.seekable`](#method-fernet_filesfernetfileseekableself---bool)
 - [`fernet_files.META_SIZE`](#int-fernet_filesmeta_size)
 - [`fernet_files.DEFAULT_CHUNKSIZE`](#int-fernet_filesdefault_chunksize)
 - [`fernet_files.custom_fernet.FernetNoBase64`](#class-fernet_filescustom_fernetfernetnobase64self-key)
@@ -85,7 +85,7 @@ For more information, see [BENCHMARKING.md](/benchmarking/BENCHMARKING.md).
 Parameters:
 
 - **key** - A key (recommended) or a [`fernet_files.custom_fernet.FernetNoBase64`](#class-fernet_filescustom_fernetfernetnobase64self-key) object
-- - A key must be 32 random bytes. Get using [`fernet_files.FernetFile.generate_key()`](#static-method-fernet_filesfernetfilegenerate_key) and store somewhere secure
+- - A key must be 32 random bytes. Get using [`fernet_files.FernetFile.generate_key()`](#static-method-fernet_filesfernetfilegenerate_key---bytes) and store somewhere secure
 - - Alternatively, pass in a [`fernet_files.custom_fernet.FernetNoBase64`](#class-fernet_filescustom_fernetfernetnobase64self-key) object
 - **file** - Accepts a filename as a string, or a file-like object. If passing in a file-like object, it must be open in binary mode and must be seekable.
 - **chunksize** - The size of chunks in bytes. 
@@ -93,7 +93,7 @@ Parameters:
 - - Bigger chunks apply padding so a very large chunksize will create a large file. Every chunk has its own metadata so a very small chunk size will create a large file.
 - - Defaults to 64KiB (65536 bytes).
 
-#### method `fernet_files.FernetFile.read(self, size=-1)`
+#### method `fernet_files.FernetFile.read(self, size=-1) -> bytes`
 
 Reads the number of bytes specified and returns them.
 
@@ -101,7 +101,7 @@ Parameters:
 
 - **size** - Positive integer. If -1 or not specified then read to the end of the file.
 
-#### method `fernet_files.FernetFile.write(self, b)`
+#### method `fernet_files.FernetFile.write(self, b) -> int`
 
 Writes the given bytes. Returns the number of bytes written.
 
@@ -109,7 +109,7 @@ Parameters:
 
 - **b** - The bytes to be written.
 
-#### method `fernet_files.FernetFile.seek(self, offset, whence=os.SEEK_SET)`
+#### method `fernet_files.FernetFile.seek(self, offset, whence=os.SEEK_SET) -> int`
 
 Can be called as:
 - seek(self, offset, whence)
@@ -125,23 +125,23 @@ Parameters:
 - - `os.SEEK_CUR` or `1` - relative to the current stream position
 - - `os.SEEK_END` or `2` - relative to the end of the stream (use negative offset)
 
-#### method `fernet_files.FernetFile.close(self)`
+#### method `fernet_files.FernetFile.close(self) -> BytesIO | None`
 
 Writes all outstanding data closes the file. Returns `None` unless the file is a `BytesIO` object, in which case it returns the object without closing it.
 
-#### static method `fernet_files.FernetFile.generate_key()`
+#### static method `fernet_files.FernetFile.generate_key() -> bytes`
 
 Static method used to generate a key. Acts as a pointer to `custom_fernet.FernetNoBase64.generate_key()`.
 
 #### bool `fernet_files.FernetFile.closed`
 
-Boolean attribute representing whether the file is closed or not. True means the file is closed, False means the file is open. It is highly recommended that you do not modify this, and use the [`close`](#method-fernet_filesfernetfilecloseself) method instead.
+Boolean attribute representing whether the file is closed or not. True means the file is closed, False means the file is open. It is highly recommended that you do not modify this, and use the [`close`](#method-fernet_filesfernetfilecloseself---bytesio--none) method instead.
 
 #### bool `fernet_files.FernetFile.writeable`
 
 Boolean attribute representing whether the file can be written to or not. True if you can write to the file, False if you can't. Will only be False if you passed in a read-only file. It is highly recommended that you do not modify this.
 
-#### method `fernet_files.FernetFile.seekable(self)`
+#### method `fernet_files.FernetFile.seekable(self) -> bool`
 
 Always returns `True`. FernetFile only supports seekable files.
 
@@ -183,20 +183,20 @@ The chunksize that is used by default, currently 4096 bytes.
 - - [`fernet_files.FernetFile.__pos_pointer`](#int-fernet_filesfernetfile__pos_pointer)
 - - [`fernet_files.FernetFile._chunk_pointer`](#property-int-fernet_filesfernetfile_chunk_pointer)
 - - [`fernet_files.FernetFile.__chunk_pointer`](#int-fernet_filesfernetfile__chunk_pointer)
-- - [`fernet_files.FernetFile.__goto_current_chunk`](#method-fernet_filesfernetfile__goto_current_chunkself)
-- - [`fernet_files.FernetFile.__get_file_size`](#method-fernet_filesfernetfile__get__file_sizeself)
-- - [`fernet_files.FernetFile.__read_chunk`](#method-fernet_filesfernetfile__read_chunkself)
-- - [`fernet_files.FernetFile.__write_chunk`](#method-fernet_filesfernetfile__write_chunkself)
-- - [`fernet_files.FernetFile.__enter__`](#method-fernet_filesfernetfile__enter__self)
-- - [`fernet_files.FernetFile.__exit__`](#method-fernet_filesfernetfile__exit__self-exc_type-exc_value-exc_traceback)
-- - [`fernet_files.FernetFile.__del__`](#method-fernet_filesfernetfile__del__self)
+- - [`fernet_files.FernetFile.__goto_current_chunk`](#method-fernet_filesfernetfile__goto_current_chunkself---none)
+- - [`fernet_files.FernetFile.__get_file_size`](#method-fernet_filesfernetfile__get__file_sizeself---int)
+- - [`fernet_files.FernetFile.__read_chunk`](#method-fernet_filesfernetfile__read_chunkself---bytesio)
+- - [`fernet_files.FernetFile.__write_chunk`](#method-fernet_filesfernetfile__write_chunkself---none)
+- - [`fernet_files.FernetFile.__enter__`](#method-fernet_filesfernetfile__enter__self---fernetfile)
+- - [`fernet_files.FernetFile.__exit__`](#method-fernet_filesfernetfile__exit__self-exc_type-exc_value-exc_traceback---none)
+- - [`fernet_files.FernetFile.__del__`](#method-fernet_filesfernetfile__del__self---none)
 - - [`fernet_files.FernetFile.__fernet`](#custom_fernetfernetnobase64-fernet_filesfernetfile__fernet)
 
 ### class `fernet_files.FernetFile`
 
 #### BytesIO `fernet_files.FernetFile.__chunk`
 
-A BytesIO object that stores the contents of the current chunk in memory. When data is written to a chunk, it is this data in memory that is manipulated. The data is then only written to a file when [`__write_chunk`](#method-fernet_filesfernetfile__write_chunkself) is called.
+A BytesIO object that stores the contents of the current chunk in memory. When data is written to a chunk, it is this data in memory that is manipulated. The data is then only written to a file when [`__write_chunk`](#method-fernet_filesfernetfile__write_chunkself---none) is called.
 
 #### (RawIOBase or BufferedIOBase or BytesIO) `fernet_files.FernetFile.__file`
 
@@ -242,33 +242,33 @@ Stores the Fernet file's current chunk number. The getter returns [`self.__chunk
 
 Stores the value for [`self._chunk_pointer`](#property-int-fernet_filesfernetfile_chunk_pointer).
 
-#### method `fernet_files.FernetFile.__goto_current_chunk(self)`
+#### method `fernet_files.FernetFile.__goto_current_chunk(self) -> None`
 
 Moves our position in [`self.__file`](#rawiobase-or-bufferediobase-or-bytesio-fernet_filesfernetfile__file) to the location represented by the chunk pointer, taking into account the metadata at the start of the file. Calculated as follows: take the number of the chunk you're currently on, multiply by the size of chunks when they're written to disk. Take the META_SIZE, multiply that by 2 and add it to the number you had before.
 
-#### method `fernet_files.FernetFile.__get__file_size(self)`
+#### method `fernet_files.FernetFile.__get__file_size(self) -> int`
 
 Calculate the size of the data contained within the file in bytes using the file's metadata. This is the size of the data, not the size of what is written to disk. Calculated as follows: take the number of the last chunk and add 1 to get the total number of chunks (because counting starts at 0). Multiply this by the chunksize. Finally, subtract the size of the padding used on the last chunk.
 
-#### method `fernet_files.FernetFile.__read_chunk(self)`
+#### method `fernet_files.FernetFile.__read_chunk(self) -> BytesIO`
 
 Reads and decrypts the current chunk, turns it into a BytesIO object, stores that object in [`self.__chunk`](#bytesio-fernet_filesfernetfile__chunk) and returns it. If the chunk has been modified, it is already loaded into memory so no file operations are done. Also responsible for removing padding if the chunk being read is the last chunk.
 
-#### method `fernet_files.FernetFile.__write_chunk(self)`
+#### method `fernet_files.FernetFile.__write_chunk(self) -> None`
 
 Encrypts and writes the chunk, and sets [`self.__chunk_modified`](#bool-fernet_filesfernetfile__chunk_modified) to False. Also responsible for applying padding and modifying the metadata at the start of the file if this is the last chunk.
 
-#### method `fernet_files.FernetFile.__enter__(self)`
+#### method `fernet_files.FernetFile.__enter__(self) -> FernetFile`
 
 Returns self to allow context management.
 
-#### method `fernet_files.FernetFile.__exit__(self, exc_type, exc_value, exc_traceback)`
+#### method `fernet_files.FernetFile.__exit__(self, exc_type, exc_value, exc_traceback) -> None`
 
-Calls [`self.close`](#method-fernet_filesfernetfilecloseself) and returns `None`.
+Calls [`self.close`](#method-fernet_filesfernetfilecloseself---bytesio--none) and returns `None`.
 
-#### method `fernet_files.FernetFile.__del__(self)`
+#### method `fernet_files.FernetFile.__del__(self) -> None`
 
-Calls [`self.close`](#method-fernet_filesfernetfilecloseself) and returns `None`.
+Calls [`self.close`](#method-fernet_filesfernetfilecloseself---bytesio--none) and returns `None`.
 
 #### custom_fernet.FernetNoBase64 `fernet_files.FernetFile.__fernet`
 
