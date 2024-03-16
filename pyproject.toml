@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fernet_files"
-version = "0.1.2"
+version = "0.2.0"
 description = "Encryption/decryption of files with cryptography.fernet, but with file-like methods"
 authors = [
     {name = "Christopher Ashford", email = "christopherash0605@gmail.com"},
@@ -22,7 +22,7 @@ classifiers = [
     "Topic :: File Formats",
 ]
 urls = {repository = "https://github.com/Kris-0605/fernet-files"}
-dependencies = ["cryptography>=36.0.2,<=42.0.2"]
+dependencies = ["cryptography>=36.0.2,<=42.0.5"]
 
 [tool.setuptools]
 license-files = ["LICENSE"]
