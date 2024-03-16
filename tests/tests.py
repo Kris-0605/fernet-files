@@ -54,7 +54,10 @@ def execute_test(desc: str, test: Callable) -> None:
 
 class TestFernetFiles(unittest.TestCase):
     def test_seekable(self):
-        self.assertEqual(fernet_files.FernetFile.seekable(), True)
+        key = fernet_files.FernetFile.generate_key()
+        fernet_file = fernet_files.FernetFile(key, "test")
+        self.assertEqual(fernet_file.seekable(), True)
+        fernet_file.close()
 
     def test_invalid_chunksizes(self):
         for chunksize in (1.5, "1", b"1"):
