@@ -290,8 +290,11 @@ Parameters:
             pass
 
     def seekable(self) -> bool:
-        '''Returns if the file is seekable or not. Will always return `True`.'''
-        return True
+        '''Returns if the file is seekable or not. Will return `True` unless the file is closed.'''
+        if self.closed:
+            raise ValueError("I/O operation on closed file")
+        else:
+            return True
 
     generate_key = FernetNoBase64.generate_key
     '''Static method used to generate a key. Acts as a pointer to `custom_fernet.FernetNoBase64.generate_key()`.'''

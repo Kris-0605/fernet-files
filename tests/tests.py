@@ -96,6 +96,7 @@ class TestFernetFiles(unittest.TestCase):
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
                 self.assertRaises(ValueError, fernet_file.write, input_data)
+                self.assertRaises(ValueError, fernet_file.seekable)
             test_random_write_withclose(self, "test", chunksize, input_data)
         execute_test("test_file_nowith_readwrite", test)
 
@@ -117,6 +118,7 @@ class TestFernetFiles(unittest.TestCase):
                 fernet_file.close()
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
+                self.assertRaises(ValueError, fernet_file.seekable)
         execute_test("test_file_nowith_readonly", test)
 
     def test_bytesio_nowith(self):
@@ -135,6 +137,7 @@ class TestFernetFiles(unittest.TestCase):
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
                 self.assertRaises(ValueError, fernet_file.write, input_data)
+                self.assertRaises(ValueError, fernet_file.seekable)
         execute_test("bytesio_nowith", test)
 
     def test_file_with_readwrite(self):
@@ -151,6 +154,7 @@ class TestFernetFiles(unittest.TestCase):
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
                 self.assertRaises(ValueError, fernet_file.write, input_data)
+                self.assertRaises(ValueError, fernet_file.seekable)
             test_random_write_withclose_withwith(self, "test", chunksize, input_data)
         execute_test("test_file_with_readwrite", test)
 
@@ -170,6 +174,7 @@ class TestFernetFiles(unittest.TestCase):
                     test_data_is_encrypted(self, "test", fernet_file, input_data)
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
+                self.assertRaises(ValueError, fernet_file.seekable)
         execute_test("test_file_with_readonly", test)
 
     def test_bytesio_with(self):
@@ -187,6 +192,7 @@ class TestFernetFiles(unittest.TestCase):
                 self.assertRaises(ValueError, fernet_file.seek, 0)
                 self.assertRaises(ValueError, fernet_file.read)
                 self.assertRaises(ValueError, fernet_file.write, input_data)
+                self.assertRaises(ValueError, fernet_file.seekable)
         execute_test("bytesio_with", test)
 
 def test_seeking(unit_test: TestFernetFiles, fernet_file: fernet_files.FernetFile, chunksize: int, input_data: bytes) -> None:

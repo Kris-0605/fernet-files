@@ -149,7 +149,7 @@ Boolean attribute representing whether the file can be written to or not. True i
 
 #### method `fernet_files.FernetFile.seekable(self) -> bool`
 
-Always returns `True`. FernetFile only supports seekable files.
+Returns if the file is seekable or not. Will return `True` unless the file is closed. FernetFile only supports seekable files.
 
 ### Misc
 
