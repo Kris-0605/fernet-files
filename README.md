@@ -161,7 +161,7 @@ You can change this value in order to bypass these limitations for future-proofi
 
 #### int `fernet_files.DEFAULT_CHUNKSIZE`
 
-The chunksize that is used by default, currently 4096 bytes.
+The chunksize that is used by default, currently 65536 bytes.
 
 #### class `fernet_files.custom_fernet.FernetNoBase64(self, key)`
 
