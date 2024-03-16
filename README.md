@@ -2,7 +2,7 @@
 
 Fernet encryption requires all data to be encrypted or decrypted at once. This is memory intensive, and it is slow if you only want to read part of a file. Fernet Files provides a simple interface that breaks data up into chunks when encrypting and decrypting them to lower memory usage. Data is only encrypted when it's necessary to do so.
 
-You may treat the class similar to (but not the same as) a file: it has [`read`](#method-fernet_filesfernetfilereadself-size-1---bytes), [`write`](#method-fernet_filesfernetfilewriteself-b---int), [`seek`](#method-fernet_filesfernetfileseekself-offset-whenceosseek_set---int) and [`close`](#method-fernet_filesfernetfilecloseself---bytesio--none) methods. It can also be context managed, so you can close it using a `with` statement.
+You may treat the class similar to (but not the same as) a file: it has [`read`](#method-fernet_filesfernetfilereadself-size-1---bytes), [`write`](#method-fernet_filesfernetfilewriteself-b---int), [`seek`](#method-fernet_filesfernetfileseekself-offset-whenceosseek_set---int), [`tell`](#method-fernet_filesfernetfiletell---int) and [`close`](#method-fernet_filesfernetfilecloseself---bytesio--none) methods. It can also be context managed, so you can close it using a `with` statement.
 
 ## Contents
 
@@ -23,6 +23,7 @@ with FernetFile(key, "filename.bin") as f:
   f.write(b'123456789') # Returns 9
   f.seek(4) # Returns 4
   f.read(3) # Returns b'567'
+  f.tell() # Returns 7
   ...
 
 # If you check the file after closing (leaving the with statement)
@@ -71,6 +72,7 @@ For more information, see [BENCHMARKING.md](/benchmarking/BENCHMARKING.md).
 - - [`fernet_files.FernetFile.read`](#method-fernet_filesfernetfilereadself-size-1---bytes)
 - - [`fernet_files.FernetFile.write`](#method-fernet_filesfernetfilewriteself-b---int)
 - - [`fernet_files.FernetFile.seek`](#method-fernet_filesfernetfileseekself-offset-whenceosseek_set---int)
+- - [`fernet_files.FernetFile.tell`](#method-fernet_filesfernetfiletell---int)
 - - [`fernet_files.FernetFile.close`](#method-fernet_filesfernetfilecloseself---bytesio--none)
 - - [`fernet_files.FernetFile.generate_key`](#static-method-fernet_filesfernetfilegenerate_key---bytes)
 - - [`fernet_files.FernetFile.closed`](#bool-fernet_filesfernetfileclosed)
@@ -124,6 +126,10 @@ Parameters:
 - - `os.SEEK_SET` or `0` - relative to the start of the stream
 - - `os.SEEK_CUR` or `1` - relative to the current stream position
 - - `os.SEEK_END` or `2` - relative to the end of the stream (use negative offset)
+
+#### method `fernet_files.FernetFile.tell(self) -> int`
+
+Returns current stream position (position in the file) as an integer.
 
 #### method `fernet_files.FernetFile.close(self) -> BytesIO | None`
 

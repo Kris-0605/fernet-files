@@ -163,6 +163,11 @@ Parameters:
             self._chunk_pointer, self._pos_pointer = original
             raise OSError("Invalid seek value")
 
+        return self.tell()
+    
+    # Note: No need to test because the tests for seek will test this
+    def tell(self) -> int:
+        '''Returns current stream position (position in the file).'''
         return self._pos_pointer + self._chunk_pointer*self.__data_chunksize
 
     def read(self, size: int = -1) -> bytes:
