@@ -342,3 +342,7 @@ Parameters:
         if self.__chunk_modified: self.__write_chunk()
         self.__chunk_pointer = value
         self.__read_chunk()
+
+    @property
+    def chunksize(self) -> int:
+        return self.__data_chunksize

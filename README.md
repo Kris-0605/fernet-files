@@ -80,6 +80,7 @@ For more information, see [BENCHMARKING.md](/benchmarking/v0.1.0/BENCHMARKING.md
 - - [`fernet_files.FernetFile.closed`](#bool-fernet_filesfernetfileclosed)
 - - [`fernet_files.FernetFile.writeable`](#bool-fernet_filesfernetfilewriteable)
 - - [`fernet_files.FernetFile.seekable`](#method-fernet_filesfernetfileseekableself---bool)
+- - [`fernet_files.FernetFile.chunksize`](#property-int-fernet_filesfernetfilechunksize)
 - [`fernet_files.META_SIZE`](#int-fernet_filesmeta_size)
 - [`fernet_files.DEFAULT_CHUNKSIZE`](#int-fernet_filesdefault_chunksize)
 - [`fernet_files.custom_fernet.FernetNoBase64`](#class-fernet_filescustom_fernetfernetnobase64self-key)
@@ -153,6 +154,13 @@ Boolean attribute representing whether the file can be written to or not. True i
 #### method `fernet_files.FernetFile.seekable(self) -> bool`
 
 Returns if the file is seekable or not. Will return `True` unless the file is closed. FernetFile only supports seekable files.
+
+#### property int `fernet_files.FernetFile.chunksize`
+
+Returns the chunksize of the file. Read-only. When opening a file, will attempt to get the value in the following order:
+- Try and read the value from the metadata if it exists, or
+- Use the value that the user has supplied, or
+- Use the default value
 
 ### Misc
 

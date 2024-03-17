@@ -88,6 +88,10 @@ class TestFernetFiles(unittest.TestCase):
             key = fernet_files.FernetFile.generate_key()
             with open("test", "wb+") as f:
                 fernet_file = fernet_files.FernetFile(key, f, chunksize)
+                self.assertEqual(fernet_file.chunksize, chunksize)
+                def set_chunksize():
+                    fernet_file.chunksize = 1
+                self.assertRaises(AttributeError, set_chunksize)
                 fernet_file.write(input_data)
                 fernet_file.seek(0)
                 test_seeking(self, fernet_file, chunksize, input_data)
@@ -108,6 +112,10 @@ class TestFernetFiles(unittest.TestCase):
             key = fernet_files.FernetFile.generate_key()
             with open("test", "wb+") as f:
                 fernet_file = fernet_files.FernetFile(key, f, chunksize)
+                self.assertEqual(fernet_file.chunksize, chunksize)
+                def set_chunksize():
+                    fernet_file.chunksize = 1
+                self.assertRaises(AttributeError, set_chunksize)
                 fernet_file.write(input_data)
                 fernet_file.close()
             with open("test", "rb") as f:
@@ -129,6 +137,10 @@ class TestFernetFiles(unittest.TestCase):
             key = fernet_files.FernetFile.generate_key()
             with BytesIO() as f:
                 fernet_file = fernet_files.FernetFile(key, f, chunksize)
+                self.assertEqual(fernet_file.chunksize, chunksize)
+                def set_chunksize():
+                    fernet_file.chunksize = 1
+                self.assertRaises(AttributeError, set_chunksize)
                 fernet_file.write(input_data)
                 fernet_file.seek(0)
                 test_seeking_bytesio(self, fernet_file, chunksize, input_data)
@@ -148,6 +160,10 @@ class TestFernetFiles(unittest.TestCase):
             key = fernet_files.FernetFile.generate_key()
             with open("test", "wb+") as f:
                 with fernet_files.FernetFile(key, f, chunksize) as fernet_file:
+                    self.assertEqual(fernet_file.chunksize, chunksize)
+                    def set_chunksize():
+                        fernet_file.chunksize = 1
+                    self.assertRaises(AttributeError, set_chunksize)
                     fernet_file.write(input_data)
                     fernet_file.seek(0)
                     test_seeking(self, fernet_file, chunksize, input_data)
@@ -169,6 +185,10 @@ class TestFernetFiles(unittest.TestCase):
                     fernet_file.write(input_data)
             with open("test", "rb") as f:
                 with fernet_files.FernetFile(key, f, chunksize) as fernet_file:
+                    self.assertEqual(fernet_file.chunksize, chunksize)
+                    def set_chunksize():
+                        fernet_file.chunksize = 1
+                    self.assertRaises(AttributeError, set_chunksize)
                     self.assertRaises(UnsupportedOperation, fernet_file.write, input_data)
                     fernet_file.seek(0)
                     test_seeking(self, fernet_file, chunksize, input_data)
@@ -185,6 +205,10 @@ class TestFernetFiles(unittest.TestCase):
             key = fernet_files.FernetFile.generate_key()
             with BytesIO() as f:
                 with fernet_files.FernetFile(key, f, chunksize) as fernet_file:
+                    self.assertEqual(fernet_file.chunksize, chunksize)
+                    def set_chunksize():
+                        fernet_file.chunksize = 1
+                    self.assertRaises(AttributeError, set_chunksize)
                     fernet_file.write(input_data)
                     fernet_file.seek(0)
                     test_seeking_bytesio(self, fernet_file, chunksize, input_data)
