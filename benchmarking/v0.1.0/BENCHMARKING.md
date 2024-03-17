@@ -2,7 +2,7 @@
 
 **Based on these benchmarks, the default chunk size is now 64KiB. It is recommended you change this to a smaller value (e.g. 4KiB) for smaller files.**
 
-- Tests can be found in [`benchmark.py`](/benchmarking/benchmark.py) and raw results in [`benchmark_results.txt`](/benchmarking/benchmark_results.txt)
+- Tests can be found in [`benchmark.py`](/benchmarking/v0.1.0/benchmark.py) and raw results in [`benchmark_results.txt`](/benchmarking/v0.1.0/benchmark_results.txt)
 - All values are given to 3sf (significant figures).
 - All times are given in milliseconds.
 - All bytes are given with their units.
