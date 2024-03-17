@@ -78,7 +78,7 @@ For more information, see [BENCHMARKING.md](/benchmarking/v0.1.0/BENCHMARKING.md
 - - [`fernet_files.FernetFile.close`](#method-fernet_filesfernetfilecloseself---bytesio--none)
 - - [`fernet_files.FernetFile.generate_key`](#static-method-fernet_filesfernetfilegenerate_key---bytes)
 - - [`fernet_files.FernetFile.closed`](#bool-fernet_filesfernetfileclosed)
-- - [`fernet_files.FernetFile.writeable`](#bool-fernet_filesfernetfilewriteable)
+- - [`fernet_files.FernetFile.writeable`](#method-fernet_filesfernetfilewriteableself---bool)
 - - [`fernet_files.FernetFile.seekable`](#method-fernet_filesfernetfileseekableself---bool)
 - - [`fernet_files.FernetFile.chunksize`](#property-int-fernet_filesfernetfilechunksize)
 - [`fernet_files.META_SIZE`](#int-fernet_filesmeta_size)
@@ -186,6 +186,7 @@ The chunksize that is used by default, currently 65536 bytes.
 - [`fernet_files.FernetFile`](#class-fernet_filesfernetfile)
 - - [`fernet_files.FernetFile.__chunk`](#bytesio-fernet_filesfernetfile__chunk)
 - - [`fernet_files.FernetFile.__file`](#rawiobase-or-bufferediobase-or-bytesio-fernet_filesfernetfile__file)
+- - [`fernet_files.FernetFile.__writeable`](#bool-fernet_filesfernetfile__writeable)
 - - [`fernet_files.FernetFile.__last_chunk`](#int-fernet_filesfernetfile__last_chunk)
 - - [`fernet_files.FernetFile.__last_chunk_padding`](#int-fernet_filesfernetfile__last_chunk_padding)
 - - [`fernet_files.FernetFile.__data_chunksize`](#int-fernet_filesfernetfile__data_chunksize)
@@ -213,6 +214,10 @@ A BytesIO object that stores the contents of the current chunk in memory. When d
 #### (RawIOBase or BufferedIOBase or BytesIO) `fernet_files.FernetFile.__file`
 
 The file object used for reading and writing. If a filename is provided then this is opened in "wb+" mode.
+
+#### bool `fernet_files.FernetFile.__writeable`
+
+Used to store if the file is writeable or not, for [`fernet_files.FernetFile.writeable`](#method-fernet_filesfernetfilewriteableself---bool).
 
 #### int `fernet_files.FernetFile.__last_chunk`
 
