@@ -147,9 +147,9 @@ Static method used to generate a key. Acts as a pointer to `custom_fernet.Fernet
 
 Boolean attribute representing whether the file is closed or not. True means the file is closed, False means the file is open. It is highly recommended that you do not modify this, and use the [`close`](#method-fernet_filesfernetfilecloseself---bytesio--none) method instead.
 
-#### bool `fernet_files.FernetFile.writeable`
+#### method `fernet_files.FernetFile.writeable(self) -> bool`
 
-Boolean attribute representing whether the file can be written to or not. True if you can write to the file, False if you can't. Will only be False if you passed in a read-only file. It is highly recommended that you do not modify this.
+Returns a boolean representing whether the file can be written to or not. `True` if you can write to the file, `False` if you can't. Will only be `False` if you passed in a read-only file, or if the file is closed.
 
 #### method `fernet_files.FernetFile.seekable(self) -> bool`
 

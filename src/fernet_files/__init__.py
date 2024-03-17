@@ -71,9 +71,9 @@ class FernetFile:
         try:
             self.__file.write(bytes(META_SIZE-8))
             self.__file.write(chunksize.to_bytes(8, "little"))
-            self.writeable = True
+            self.__writeable = True
         except UnsupportedOperation:
-            self.writeable = False
+            self.__writeable = False
 
         self.__data_chunksize = chunksize # the size of the data in chunks
         self.__chunksize = chunksize + 73 - (chunksize % 16) # the size of chunks when written to disk
@@ -107,7 +107,7 @@ class FernetFile:
     
     def __write_chunk(self) -> None:
         '''Encrypts and writes the chunk, and sets `self.__chunk_modified` to False.\nAlso responsible for applying padding and modifying the metadata at the start of the file if this is the last chunk.'''
-        if not self.writeable:
+        if not self.writeable():
             return # Raising an exception is the write method's responsibility
         self.__goto_current_chunk()
         data = self.__chunk.getvalue()
@@ -224,7 +224,7 @@ Parameters:
 Parameters:
 
 - b - The bytes to be written.'''
-        if not self.writeable:
+        if not self.writeable():
             raise UnsupportedOperation("write")
         if self.closed:
             raise ValueError("I/O operation on closed file")
@@ -295,6 +295,13 @@ Parameters:
             raise ValueError("I/O operation on closed file")
         else:
             return True
+        
+    def writeable(self) -> bool:
+        '''Returns if the file is writeable or not. Will be `True` unless you passed in a read-only file, or the file is closed.'''
+        if self.closed:
+            raise ValueError("I/O operation on closed file")
+        else:
+            return self.__writeable
 
     generate_key = FernetNoBase64.generate_key
     '''Static method used to generate a key. Acts as a pointer to `custom_fernet.FernetNoBase64.generate_key()`.'''
