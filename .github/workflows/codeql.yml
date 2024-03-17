@@ -16,6 +16,8 @@ name: "CodeQL"
 on:
   push:
     branches: [ "**" ]
+    paths:
+      - '**.py'
   pull_request:
     branches: [ "**" ]
   schedule:
