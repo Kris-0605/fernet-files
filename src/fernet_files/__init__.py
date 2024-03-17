@@ -14,10 +14,8 @@ import os
 import os.path
 from io import BytesIO, RawIOBase, BufferedIOBase, StringIO, TextIOBase, UnsupportedOperation
 
-# Don't modify without reading documentation
-META_SIZE = 8
-'''The size of a file's metadata is META_SIZE*2.
-See documentation for more information.'''
+META_SIZE = 24
+'''The size of a file's metadata is META_SIZE bytes.'''
 
 DEFAULT_CHUNKSIZE = 65536
 '''The default size of chunks in bytes.'''
@@ -63,14 +61,16 @@ class FernetFile:
         # get metadata
         self.__file.seek(0)
         if x := self.__file.read(META_SIZE): # If metadata exists, read it
-            self.__last_chunk = int.from_bytes(x, "little")
-            self.__last_chunk_padding = int.from_bytes(self.__file.read(META_SIZE), "little")
+            self.__last_chunk = int.from_bytes(x[:8], "little")
+            self.__last_chunk_padding = int.from_bytes(x[8:16], "little")
+            chunksize = int.from_bytes(x[16:], "little")
         else:
             self.__last_chunk, self.__last_chunk_padding = 0, 0
         # write metadata + check writeability
         self.__file.seek(0)
         try:
-            self.__file.write(bytes(META_SIZE*2))
+            self.__file.write(bytes(META_SIZE-8))
+            self.__file.write(chunksize.to_bytes(8, "little"))
             self.writeable = True
         except UnsupportedOperation:
             self.writeable = False
@@ -84,7 +84,7 @@ class FernetFile:
 
     def __goto_current_chunk(self) -> None:
         '''Moves our position in `self.__file` to the location represented by the chunk pointer, taking into account the metadata at the start of the file.\nCalculated as follows: take the number of the chunk you're currently on, multiply by the size of chunks when they're written to disk. Take the META_SIZE, multiply that by 2 and add it to the number you had before.'''
-        self.__file.seek(self._chunk_pointer*self.__chunksize+META_SIZE*2)
+        self.__file.seek(self._chunk_pointer*self.__chunksize+META_SIZE)
 
     def __get_file_size(self) -> int:
         '''Calculate the size of the data contained within the file in bytes using the file's metadata. This is the size of the data, not the size of what is written to disk.\nCalculated as follows: take the number of the last chunk and add 1 to get the total number of chunks (because counting starts at 0). Multiply this by the chunksize. Finally, subtract the size of the padding used on the last chunk.'''
@@ -118,8 +118,8 @@ class FernetFile:
             self.__last_chunk = self._chunk_pointer
             self.__last_chunk_padding = padding
             self.__file.seek(0)
-            self.__file.write(self.__last_chunk.to_bytes(META_SIZE, "little"))
-            self.__file.write(self.__last_chunk_padding.to_bytes(META_SIZE, "little"))
+            self.__file.write(self.__last_chunk.to_bytes(8, "little"))
+            self.__file.write(self.__last_chunk_padding.to_bytes(8, "little"))
         self.__chunk_modified = False
 
     def seek(self, *args, whence: int = os.SEEK_SET) -> int:

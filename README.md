@@ -34,6 +34,8 @@ with FernetFile(key, "filename.bin") as f:
     f.read() # Returns b'123456789'
 ```
 
+You can also supply the chunksize of a file, which affects memory usage, disk usage and performance. Supply this using `FernetFile(key, file, chunksize=123456)`, or omit it to use the default. You can only specify chunksize when first creating a file, after which the chunksize will be read from the file metadata.
+
 Note: The default chunksize is 64KiB. This means the minimum output file size is 64KiB. If you are encrypting a small amount of data, I recommend you lower the chunksize. However, only do this if necessary as this will damage performance.
 
 ## Requirements
@@ -90,7 +92,8 @@ Parameters:
 - - A key must be 32 random bytes. Get using [`fernet_files.FernetFile.generate_key()`](#static-method-fernet_filesfernetfilegenerate_key---bytes) and store somewhere secure
 - - Alternatively, pass in a [`fernet_files.custom_fernet.FernetNoBase64`](#class-fernet_filescustom_fernetfernetnobase64self-key) object
 - **file** - Accepts a filename as a string, or a file-like object. If passing in a file-like object, it must be open in binary mode and must be seekable.
-- **chunksize** - The size of chunks in bytes. 
+- **chunksize** - The size of chunks in bytes.
+- - Chunksize is stored after the file is created and cannot be altered without creating a new file. When reading an existing file, chunksize is ignored.
 - - Bigger chunks use more memory and take longer to read or write, but smaller chunks can be very slow when trying to read/write in large quantities.
 - - Bigger chunks apply padding so a very large chunksize will create a large file. Every chunk has its own metadata so a very small chunk size will create a large file.
 - - Defaults to 64KiB (65536 bytes).
@@ -155,15 +158,10 @@ Returns if the file is seekable or not. Will return `True` unless the file is cl
 
 #### int `fernet_files.META_SIZE`
 
-It is highly recommended you don't modify this. Defaults to 8. META_SIZE represented as $M$ in formulae.
-
-The size of a file's metadata in bytes is $2M$. The first number is a little-endian unsigned $(8M)$-bit integer, representing how many chunks are in the file. The second number is a little-endian unsigned $(8M)$-bit integer, representing the size of the last chunk's padding.
-
-This simultaneously limits both chunksize and the number of chunks a file can have:
-- A chunk can have a max size of $2^{8M}-1$ bytes (default 18,446,744,073,709,551,615)
-- A file can have a max $2^{8M}-1$ chunks (default 18,446,744,073,709,551,615)
-
-You can change this value in order to bypass these limitations for future-proofing, however, the value you use must be consistent when reading and writing to the same file. Therefore, I recommend you don't change it unless you absolutely have to, for compatibility reasons.
+The size of a file's metadata in bytes. As of v0.2.0, this size is 24 bytes, structured as 3 64-bit unsigned little-endian integers:
+- The number of the last chunk in the file (see [`fernet_files.FernetFile.__last_chunk`](#int-fernet_filesfernetfile__last_chunk))
+- The amount of padding applied to the last chunk in bytes (see [`fernet_files.FernetFile.__last_chunk_padding`](#int-fernet_filesfernetfile__last_chunk_padding))
+- The chunksize of the file
 
 #### int `fernet_files.DEFAULT_CHUNKSIZE`
 
