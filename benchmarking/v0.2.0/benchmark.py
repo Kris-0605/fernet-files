@@ -15,28 +15,30 @@ def fernet_decrypt():
         fernet.decrypt(f.read())[0]
 
 def test_fernet():
-    timer = perf_counter()
-    fernet_encrypt()
-    encryption_time = perf_counter() - timer
+    with open("benchmark_results.txt", "a") as output:
+        timer = perf_counter()
+        fernet_encrypt()
+        encryption_time = perf_counter() - timer
 
-    timer = perf_counter()
-    fernet_decrypt()
-    decryption_time = perf_counter() - timer
+        timer = perf_counter()
+        fernet_decrypt()
+        decryption_time = perf_counter() - timer
 
-    remove("test")
+        remove("test")
 
-    tracemalloc.start()
-    fernet_encrypt()
-    _, encryption_memory = tracemalloc.get_traced_memory()
-    tracemalloc.stop()
+        tracemalloc.start()
+        fernet_encrypt()
+        _, encryption_memory = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
 
-    tracemalloc.start()
-    fernet_decrypt()
-    _, decryption_memory = tracemalloc.get_traced_memory()
-    tracemalloc.stop()
+        tracemalloc.start()
+        fernet_decrypt()
+        _, decryption_memory = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
 
-    print(f"{'FernetNoBase64' if isinstance(fernet, FernetNoBase64) else 'Fernet'} {datasize} bytes:\n{encryption_time} seconds to encrypt\n{decryption_time} seconds to read first byte\n{encryption_memory} bytes peak memory to encrypt\n{decryption_memory} bytes peak memory to decrypt\nOutput filesize {getsize('test')} bytes")
-    remove("test")
+        out = f"{'FernetNoBase64' if isinstance(fernet, FernetNoBase64) else 'Fernet'} {datasize} bytes:\n{encryption_time} seconds to encrypt\n{decryption_time} seconds to read first byte\n{encryption_memory} bytes peak memory to encrypt\n{decryption_memory} bytes peak memory to decrypt\nOutput filesize {getsize('test')} bytes\n"
+        print(out)
+        remove("test")
 
 def ff_encrypt():
     with FernetFile(ff_key, "test", chunksize=chunksize) as f:
@@ -47,7 +49,7 @@ def ff_decrypt():
         f.read(1)
 
 def test_ff():
-    with open("benchmark_results.txt", "w") as output:
+    with open("benchmark_results.txt", "a") as output:
         timer = perf_counter()
         ff_encrypt()
         encryption_time = perf_counter() - timer
@@ -68,7 +70,9 @@ def test_ff():
         _, decryption_memory = tracemalloc.get_traced_memory()
         tracemalloc.stop()
 
-        output.write(f"FernetFile chunksize {chunksize} bytes, datasize {datasize} bytes:\n{encryption_time} seconds to encrypt\n{decryption_time} seconds to read first byte\n{encryption_memory} bytes peak memory to encrypt\n{decryption_memory} bytes peak memory to decrypt\nOutput filesize {getsize('test')} bytes\n")
+        out = f"FernetFile chunksize {chunksize} bytes, datasize {datasize} bytes:\n{encryption_time} seconds to encrypt\n{decryption_time} seconds to read first byte\n{encryption_memory} bytes peak memory to encrypt\n{decryption_memory} bytes peak memory to decrypt\nOutput filesize {getsize('test')} bytes\n"
+        print(out)
+        output.write(out)
         remove("test")
 
 ff_key = FernetFile.generate_key()
