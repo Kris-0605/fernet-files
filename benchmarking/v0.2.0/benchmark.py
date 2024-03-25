@@ -73,12 +73,12 @@ def test_ff():
 
 ff_key = FernetFile.generate_key()
 
-for datasize in (2**a for a in range(0, 40, 4)):
+for datasize in (2**a for a in range(0, 36, 4)):
     data = urandom(datasize)
     fernet = Fernet(Fernet.generate_key())
     test_fernet()
     fernet = FernetNoBase64(FernetNoBase64.generate_key())
     test_fernet()
     for chunksize in (2**b for b in range(8, 28, 4)):
-        if not ((chunksize == 2**8 or chunksize == 2**12) and (datasize == 2**28 or datasize == 2**32 or datasize == 2**36)):
+        if not ((chunksize == 2**8 or chunksize == 2**12) and (datasize == 2**28 or datasize == 2**32)):
             test_ff()
