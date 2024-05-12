@@ -36,8 +36,10 @@ def test_fernet():
     _, decryption_memory = tracemalloc.get_traced_memory()
     tracemalloc.stop()
 
+    size_difference_percentage = getsize("test")/datasize-1
+
     remove("test")
-    return encryption_time, decryption_time, encryption_memory, decryption_memory
+    return encryption_time, decryption_time, encryption_memory, decryption_memory, size_difference_percentage
 
 def ff_encrypt():
     with FernetFile(ff_key, "test", chunksize=chunksize) as f:
